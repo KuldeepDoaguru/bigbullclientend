@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Alegreya';
+  src: local('Futura-bold'), url('./fonts/Alegreya-Italic-VariableFont_wght.ttf') format('ttf');
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
