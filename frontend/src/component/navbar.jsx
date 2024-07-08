@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "./../../public/logo/logo.png";
 import SideBar from "./sidebar";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { HiMiniUserCircle } from "react-icons/hi2";
 
 const Navbar = () => {
+  const location = useLocation();
   const [isChecked, setIsChecked] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -73,7 +74,11 @@ const Navbar = () => {
               <li>
                 <Link
                   to={"/"}
-                  className="block hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl hover:underline hover:underline-offset-8 text-black rounded md:bg-transparent transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`block ${
+                    location.pathname === "/"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl hover:underline hover:underline-offset-8 text-black rounded md:bg-transparent transition duration-300 ease-in-out transform hover:scale-105`}
                   aria-current="page"
                 >
                   Home
@@ -82,7 +87,11 @@ const Navbar = () => {
               <li>
                 <Link
                   to={"/courses"}
-                  className="block hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`block ${
+                    location.pathname === "/courses"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105`}
                 >
                   Courses
                 </Link>
@@ -90,7 +99,11 @@ const Navbar = () => {
               <li>
                 <Link
                   to={"/about"}
-                  className="block hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black md:text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`block ${
+                    location.pathname === "/about"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black md:text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105`}
                 >
                   About
                 </Link>
@@ -98,7 +111,11 @@ const Navbar = () => {
               <li>
                 <Link
                   to={"/blogs"}
-                  className="block hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`block ${
+                    location.pathname === "/blogs"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105`}
                 >
                   Blogs
                 </Link>
@@ -106,9 +123,13 @@ const Navbar = () => {
               <li>
                 <Link
                   to={"/ContactUs"}
-                  className="block hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`block ${
+                    location.pathname === "/ContactUs"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  md:max-lg:text-lg sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded    md:dark:hover:text-blue-500 dark:text-white dark:hover:text-white transition duration-300 ease-in-out transform hover:scale-105`}
                 >
-                  Contact Us
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -119,13 +140,19 @@ const Navbar = () => {
               <>
                 <Link
                   to={"/EnrollForm"}
-                  className=" sm:max-lg:text-lg text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl sm:max-lg:py-1 lg:px-4 sm:px-2 sm:py-2 lg:py-2 text-center"
+                  className={`sm:max-lg:text-lg text-white ${
+                    location.pathname === "/EnrollForm" ? "bg-red-900" : ""
+                  } bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl sm:max-lg:py-1 lg:px-4 sm:px-2 sm:py-2 lg:py-2 text-center`}
                 >
                   Enroll Now
                 </Link>
                 <Link
                   to={"/login"}
-                  className=" hover:underline hover:underline-offset-8  sm:max-lg:text-lg block sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded transition duration-300 ease-in-out transform hover:scale-105"
+                  className={`${
+                    location.pathname === "/login"
+                      ? "underline underline-offset-8"
+                      : ""
+                  } hover:underline hover:underline-offset-8  sm:max-lg:text-lg block sm:py-2 md:px-3 sm:px-1 text-xl text-black text-gray-900 rounded transition duration-300 ease-in-out transform hover:scale-105`}
                 >
                   Log In
                 </Link>
@@ -134,15 +161,27 @@ const Navbar = () => {
               <>
                 <Link
                   to={"/cart"}
-                  className="text-4xl md:max-lg:text-2xl focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl md:max-lg:py-1 sm:py-2 lg:py-2 text-center"
+                  className={`text-4xl md:max-lg:text-2xl focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl md:max-lg:py-1 sm:py-2 lg:py-2 text-center`}
                 >
-                  <FaShoppingCart />
+                  <FaShoppingCart
+                    className={`${
+                      location.pathname === "/cart"
+                        ? "text-red-700 text-3xl"
+                        : ""
+                    } hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
+                  />
                 </Link>
                 <Link
                   to={"/profile"}
                   className="hover:underline hover:underline-offset-8  md:max-lg:text-3xl block sm:py-2 sm:px-1 text-2xl text-black text-gray-900 rounded transition duration-300 ease-in-out transform hover:scale-105"
                 >
-                  <HiMiniUserCircle />
+                  <HiMiniUserCircle
+                    className={`${
+                      location.pathname === "/profile"
+                        ? "text-red-700 text-3xl"
+                        : ""
+                    }  hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
+                  />
                 </Link>
                 <button
                   onClick={handleLogout}

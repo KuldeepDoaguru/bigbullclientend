@@ -33,13 +33,13 @@ import { useSelector } from "react-redux";
 
 function App() {
   const location = useLocation();
-  const hideNavbarRoutes = ["/"];
+  // const hideNavbarRoutes = ["/"];
   const user = useSelector((state) => state.user);
   console.log(user);
 
   return (
     <>
-      {location.pathname !== "/" || user?.id !== null ? <Navbar /> : ""}
+      {location.pathname !== "/" ? <Navbar /> : ""}
       <ScrollToTop>
         <Routes>
           <Route path="/" element={<Home />} />

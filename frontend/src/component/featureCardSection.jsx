@@ -1,54 +1,60 @@
 import styled from "styled-components";
-// import courseImage1 from "../Assets/courseImage1.webp";
-// import courseImage2 from "../Assets/courseImage2.webp";
-// import courseImage3 from "../Assets/courseImage3.webp";
 import courseFeatureBackground from "../Assets/courseFeatureBackground.jpg";
 import blanckBackground from "../Assets/blanckBackground.png";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 // import React from "react";
 import { CardBody, CardContainer, CardItem } from "./3d-card";
-
-const cardContent = [
-  {
-    heading: "Beginner’s Guide to Stock Market Investing",
-    desc: "Understand the basics, start investing, and manage risks",
-    image:
-      "https://www.ringcentral.com/gb/en/blog/wp-content/uploads/2021/05/happy-manager-leads-a-meeting-in-the-office-640x427.jpg",
-  },
-  {
-    heading: "Beginner’s Guide to Stock Market Investing",
-    desc: "Understand the basics, start investing, and manage risks",
-    image:
-      "https://www.shutterstock.com/image-photo/happy-mid-aged-business-woman-600nw-2353012835.jpg",
-  },
-  {
-    heading: "Beginner’s Guide to Stock Market Investing",
-    desc: "Understand the basics, start investing, and manage risks",
-    image:
-      "https://cdn.sanity.io/images/xmpcmhrn/production/f363771ad3c072ec71f1ea5e8f3868d18de231a6-1200x800.jpg?rect=0,62,1200,674&w=436&h=245&q=80&fit=max&auto=format",
-  },
-];
+import axios from "axios";
+import { useSelector } from "react-redux";
+import cogoToast from "cogo-toast";
 
 const FeatureCardSection = () => {
+  const [allCourse, setAllCourse] = useState([]);
   const scrollRef = useRef(null);
+  const user = useSelector((state) => state.user);
+  console.log(user);
 
   useEffect(() => {
     if (scrollRef.current) {
       const scrollContainer = scrollRef.current;
-
-      // Ensure the container is fully rendered before calculating the scroll position
       setTimeout(() => {
         const scrollLeft =
           (scrollContainer.scrollWidth - scrollContainer.clientWidth) / 2;
-
-        // Scroll the container to the center position
         scrollContainer.scrollTo({
           left: scrollLeft,
-          behavior: "smooth", // Optional: adds a smooth scrolling effect
+          behavior: "smooth",
         });
       }, 0);
     }
   }, []);
+
+  const getCourses = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:6060/api/v1/auth/getAllCourses"
+      );
+      setAllCourse(data.result);
+    } catch (error) {
+      console.log("Error getting courses ", error);
+    }
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  const addCart = async (id) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+      );
+      cogoToast.success("Course added to cart successfully");
+    } catch (error) {
+      console.log(error);
+      cogoToast.error(error?.response.data?.message);
+    }
+  };
+
   return (
     <>
       <Container>
@@ -66,23 +72,23 @@ const FeatureCardSection = () => {
               className="makeScrollable lg:flex justify-center"
             >
               <div className="feature-container gap-x-20 sm:gap-16 md:gap-2 grow flex justify-center 2xl:max-w-screen-xl flex-wrap xl:grid-cols-3 md:max-lg:grid md:grid-cols-1 lg:grid-cols-3 justify-items-center items-center md:w-full md:gap-y-8 2xl:grid 2xl:grid-cols-3 ">
-                {cardContent.map((card) => (
+                {allCourse.slice(0, 3).map((card) => (
                   <>
-                    <CardContainer className="">
-                      <CardBody className="bg-neutral-100 relative lg:w-11/12 lg:max-w-[23rem] md:w-10/12 w-[90vw] xl:max-w-[25rem] h-auto rounded-xl px-[4vw] sm:px-6 py-[2vw] sm:py-10 ">
+                    <CardContainer className="h-[600px] sm:w-[450px] px-[4vw] sm:px-6">
+                      <CardBody className="bg-neutral-100 relative lg:w-11/12 lg:max-w-[23rem] md:w-10/12 w-[90vw] xl:max-w-[25rem] h-100 rounded-xl px-[4vw] sm:px-6 py-[2vw] sm:py-10 ">
                         <CardItem
                           translateZ={50}
-                          className="text-2xl font-bold text-neutral-600 text-black"
+                          className="text-2xl font-bold text-neutral-600 text-black h-20"
                         >
                           {/* Make things float in air */}
-                          {card.heading}
+                          {card.course_name}
                         </CardItem>
                         <CardItem
                           translateZ={150}
-                          className="w-full mt-4 sm:my-10"
+                          className="w-100 mt-4 sm:my-10"
                         >
                           <img
-                            src={card.image}
+                            src="https://www.ringcentral.com/gb/en/blog/wp-content/uploads/2021/05/happy-manager-leads-a-meeting-in-the-office-640x427.jpg"
                             className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl "
                             alt="thumbnail"
                           />
@@ -92,9 +98,49 @@ const FeatureCardSection = () => {
                             translateZ={20}
                             to="https://twitter.com/mannupaaji"
                             target="__blank"
+                            className="px-4 rounded-xl text-xl h-16 font-semibold text-black"
+                          >
+                            {card.description}
+                          </CardItem>
+                        </div>
+                        <div className="flex justify-between items-center mt-5">
+                          <CardItem
+                            translateZ={20}
+                            to="https://twitter.com/mannupaaji"
+                            target="__blank"
+                            className="px-2 rounded-xl text-lg font-semibold text-black"
+                          >
+                            <p className="text-red-700">
+                              Price - {card.price} INR
+                            </p>
+                          </CardItem>
+                          <CardItem
+                            translateZ={20}
+                            to="https://twitter.com/mannupaaji"
+                            target="__blank"
                             className="px-4 rounded-xl text-xl font-semibold text-black"
                           >
-                            {card.desc}
+                            {user?.id === null ? (
+                              <>
+                                {" "}
+                                <button
+                                  disabled
+                                  className="text-white bg-red-300 text-sm sm:text-base py-1 px-3 rounded-xl "
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                {" "}
+                                <button
+                                  onClick={() => addCart(card.course_id)}
+                                  className="text-white bg-red-700 text-sm sm:text-base py-1 px-3 rounded-xl "
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            )}
                           </CardItem>
                         </div>
                       </CardBody>

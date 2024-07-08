@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa"; // Importing star icons
 import { useSelector } from "react-redux";
 import { FaArrowRightLong, FaArrowLeftLong } from "react-icons/fa6";
+import axios from "axios";
+import cogoToast from "cogo-toast";
+import moment from "moment";
 
 const courses = [
   {
@@ -66,6 +69,7 @@ const courses = [
 const CourseComponent = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
+  const [allCourse, setAllCourse] = useState([]);
   const [selectedDate, setSelectedDate] = useState("All");
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -74,35 +78,68 @@ const CourseComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 3;
 
+  const getCourses = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:6060/api/v1/auth/getAllCourses"
+      );
+      setAllCourse(data.result);
+    } catch (error) {
+      console.log("Error getting courses ", error);
+    }
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  console.log(allCourse);
+
+  const addCart = async (id) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+      );
+      cogoToast.success("Course added to cart successfully");
+    } catch (error) {
+      console.log(error);
+      cogoToast.error(error?.response.data?.message);
+    }
+  };
+
   const filterByPrice = (course) => {
     switch (selectedPrice) {
-      case "Under Rs 50":
-        return course.price < 50;
-      case "Rs 50 - Rs 100":
-        return course.price >= 50 && course.price <= 100;
+      case "Under Rs 1000":
+        return course.price < 1000;
+      case "Rs 1000 - Rs 5000":
+        return course.price >= 1000 && course.price <= 5000;
       case "Above Rs 100":
-        return course.price > 100;
+        return course.price > 5000;
       default:
         return true;
     }
   };
 
   const filterByDate = (course) => {
-    const currentDate = new Date();
-    const courseDate = new Date(course.date);
+    const currentDate = moment();
+    const courseDate = moment(course.created_at);
+    console.log(currentDate, courseDate);
+    const differenceInDays = currentDate.diff(courseDate, "days");
+    console.log(differenceInDays);
+
     switch (selectedDate) {
       case "Last 30 Days":
-        return (currentDate - courseDate) / (1000 * 60 * 60 * 24) <= 30;
+        return differenceInDays <= 30;
       case "Last 6 Months":
-        return (currentDate - courseDate) / (1000 * 60 * 60 * 24) <= 180;
+        return differenceInDays <= 180;
       case "Last Year":
-        return (currentDate - courseDate) / (1000 * 60 * 60 * 24) <= 365;
+        return differenceInDays <= 365;
       default:
         return true;
     }
   };
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = allCourse?.filter((course) => {
     return (
       (selectedCategory === "All" || course.category === selectedCategory) &&
       filterByPrice(course) &&
@@ -133,8 +170,21 @@ const CourseComponent = () => {
     }
   };
 
-  const categories = ["All", "React", "Node.js", "CSS", "JavaScript"];
-  const priceRanges = ["All", "Under Rs 50", "Rs 50 - Rs 100", "Above Rs 100"];
+  const categories = allCourse.reduce((acc, course) => {
+    if (course.category && !acc.includes(course.category)) {
+      acc.push(course.category);
+    }
+    return acc;
+  }, []);
+
+  console.log(categories);
+
+  const priceRanges = [
+    "All",
+    "Under Rs 1000",
+    "Rs 1000 - Rs 5000",
+    "Above Rs 5000",
+  ];
   const dates = ["All", "Last 30 Days", "Last 6 Months", "Last Year"];
 
   const handleFilterClick = (category) => {
@@ -203,7 +253,17 @@ const CourseComponent = () => {
         </div>
         <div className="flex flex-col sm:flex-row justify-around items-center mb-6 gap-y-8 sm:gap-0 max-md:mt-16">
           <div className="flex flex-wrap gap-2 sm:mb-0 justify-center sm:justify-start sm:max-lg:max-w-sm ">
-            {categories.map((category) => (
+            <button
+              onClick={() => handleFilterClick("All")}
+              className={`px-4 py-1 border-1 border-rose-500 rounded-2xl transition-colors duration-300 ${
+                selectedCategory === "All"
+                  ? "bg-red-600 text-white"
+                  : "bg-red text-gray-800 hover:bg-red-600 hover:text-white"
+              }`}
+            >
+              All
+            </button>
+            {categories?.map((category) => (
               <button
                 key={category}
                 onClick={() => handleFilterClick(category)}
@@ -262,14 +322,14 @@ const CourseComponent = () => {
                 <>
                   <div className="card-container min-w-72 max-sm:max-w-[17rem]">
                     <div
-                      key={course.id}
-                      className="bg-white card border  p-3.5 cursor-pointer rounded-lg shadow-lg text-black transition-transform transform hover:scale-105"
-                      onClick={() => handleCourseClick(course.id)}
+                      key={course.course_id}
+                      className="bg-white card border  p-3.5  rounded-lg shadow-lg text-black transition-transform transform hover:scale-105"
                     >
                       <div className="w-full h-48 mb-2 overflow-hidden rounded-lg">
                         <img
                           src={course.pic}
                           alt={course.title}
+                          onClick={() => handleCourseClick(course.course_id)}
                           className="w-full h-full object-cover rounded-t-lg"
                         />
                       </div>
@@ -277,15 +337,18 @@ const CourseComponent = () => {
                       <div>
                         <div className="max-w-64 sm:max-w-80 py-1 sm:py-2 ">
                           <button className="bg-[#2495D6] text-white py-0.5 sm:py-1 px-3 rounded-md">
-                            {course.level || "Beginner"}
+                            {course.category || "Beginner"}
                           </button>
                           {/* <p className="text-[#2495D6] text-sm sm:text-base my-2 sm:my-2.5">
                 {course.category || ""}
               </p> */}
-                          <p className="font-bold text-base sm:text-xl">
-                            {course.title || ""}
+                          <p
+                            className="font-bold text-base sm:text-xl h-20 hover:text-red-700 hover:text-xl transform transition-all duration-300 ease-in-out"
+                            onClick={() => handleCourseClick(course.course_id)}
+                          >
+                            {course.course_name || ""}
                           </p>
-                          <p className="text-sm sm:text-sm font-semibold my-1 sm:my-2.5">
+                          <p className="text-sm sm:text-sm font-semibold my-1 sm:my-2.5 h-10">
                             {course.description || ""}
                           </p>
                         </div>
@@ -312,21 +375,31 @@ const CourseComponent = () => {
                           </div>
                           <div className="text-center">
                             <p
-                              className={`${
-                                user ? "text-gray-500" : ""
-                              } mb-2 text-base font-bold sm:text-md`}
+                              className={` mb-2 text-base font-bold sm:text-md`}
                             >
                               {course.price ? `${course.price} Rs` : ""}
                             </p>
-
-                            <button
-                              onClick={handleCartClick}
-                              className={`text-white ${
-                                user ? "bg-gray-500" : "bg-red-700 "
-                              } text-sm sm:text-md py-1 px-3 rounded-xl`}
-                            >
-                              Add to cart
-                            </button>
+                            {user?.id === null ? (
+                              <>
+                                {" "}
+                                <button
+                                  disabled
+                                  className={`text-white bg-red-300 text-sm sm:text-md py-1 px-3 rounded-xl`}
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                {" "}
+                                <button
+                                  onClick={addCart}
+                                  className={`text-white bg-red-700 text-sm sm:text-md py-1 px-3 rounded-xl`}
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>

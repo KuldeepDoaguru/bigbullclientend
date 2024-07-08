@@ -101,17 +101,17 @@ const About = () => {
                     <div className="flex justify-center mt-2 gap-4">
                       <div className="social-media-icon">
                         <Link className="text-gray-500 mx-2 text-3xl">
-                          <FaFacebook />
+                          <FaFacebook className="hover:text-red-700 hover:text-4xl transform transition-all duration-300 ease-in-out" />
                         </Link>
                       </div>
                       <div>
                         <Link className="text-gray-500 mx-2 text-3xl">
-                          <FaLinkedin />
+                          <FaLinkedin className="hover:text-red-700 hover:text-4xl transform transition-all duration-300 ease-in-out" />
                         </Link>
                       </div>
                       <div>
                         <Link className="text-gray-500 mx-2 text-3xl">
-                          <FaTwitter />
+                          <FaTwitter className="hover:text-red-700 hover:text-4xl transform transition-all duration-300 ease-in-out" />
                         </Link>
                       </div>
                     </div>

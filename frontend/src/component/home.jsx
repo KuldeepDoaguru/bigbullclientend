@@ -48,6 +48,7 @@ const closeObserver = (ref, observer) => {
   }
 };
 const Home = () => {
+  const [allCourse, setAllCourse] = useState([]);
   const [navbar, setNavbar] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const sectionRef1 = useRef(null);
@@ -71,14 +72,22 @@ const Home = () => {
     }
   };
 
-  const getCourses = () => {
+  const getCourses = async () => {
     try {
-      axios.get("http://localhost:6060/api/v1/auth/");
+      const { data } = await axios.get(
+        "http://localhost:6060/api/v1/auth/getAllCourses"
+      );
+      setAllCourse(data.result);
     } catch (error) {
       console.log("Error getting courses ", error);
     }
-    axios.get("");
   };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  console.log(allCourse);
 
   useEffect(() => {
     const isMobile = window.innerWidth <= 530;

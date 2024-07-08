@@ -3,61 +3,57 @@ const { db } = require("../config/db");
 const dotenv = require("dotenv");
 const { log, error } = require("console");
 const { loginController } = require("./authController");
+const moment = require("moment-timezone");
 dotenv.config();
 
 const PORT = process.env.PORT;
 
-
 // Make Controller for Sql -Adi
 const addToCart = (req, res) => {
-  const { user_id, item_id } = req.body;
+  const { user_id, item_id } = req.params;
+  console.log("14", user_id, item_id);
+  const time = moment.tz("Asia/Kolkata").format("DD-MM-YYYY HH:mm:ss");
 
   // Check if the user's cart exists
   db.query(
-    "SELECT * FROM cart2 WHERE user_id = ?",
-    [user_id],
+    "SELECT * FROM carts WHERE user_id = ? AND item_id = ?",
+    [user_id, item_id],
     (err, result) => {
       if (err) {
         console.error("Error checking cart:", err);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Internal Server Error" });
       }
 
       if (result.length === 0) {
         // Create a new cart if none exists
         db.query(
-          "INSERT INTO cart2 (user_id, item_id) VALUES (?, ?)",
-          [user_id, item_id],
-          (err) => {
-            if (err) {
-              console.error("Error creating cart:", err);
-              return res.status(500).json({ success: false, message: "Internal Server Error" });
-            }
-
-            res.status(201).json({ success: true, message: "Item added to the new cart successfully" });
-          }
-        );
-      } else {
-        // Cart exists, add the item to the existing cart
-        const cart_id = result[0].cart_id;
-        db.query(
-          "INSERT INTO cart2 (cart_id, user_id, item_id) VALUES (?, ?, ?)",
-          [cart_id, user_id, item_id],
+          "INSERT INTO carts (user_id, item_id, created_at) VALUES (?, ?, ?)",
+          [user_id, item_id, time],
           (err) => {
             if (err) {
               console.error("Error adding item to cart:", err);
-              return res.status(500).json({ success: false, message: "Internal Server Error" });
+              return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
             }
-            res.status(201).json({ success: true, message: "Item added to the existing cart successfully" });
+
+            return res.status(200).json({
+              success: true,
+              message: "Item added to the cart successfully",
+            });
           }
         );
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Item already exists in the cart",
+        });
       }
     }
   );
 };
-
-
-
-
 
 const addToCartMongo = async (req, res) => {
   try {
@@ -133,7 +129,7 @@ const getAllCourses = async (req, res) => {
   }
 };
 
-// 
+//
 const thumbnail = async (req, res) => {
   try {
     const courseId = req.params.courseId;
@@ -316,7 +312,9 @@ const addToWishlist = (req, res) => {
     async (err, items) => {
       if (err) {
         console.error("Error checking wishlist:", err);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Internal Server Error" });
       }
 
       if (items.length === 0) {
@@ -327,23 +325,26 @@ const addToWishlist = (req, res) => {
           async (err) => {
             if (err) {
               console.error("Error adding item to wishlist:", err);
-              return res.status(500).json({ success: false, message: "Internal Server Error" });
+              return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
             }
             console.log("item added to the wishlist.");
-            res.status(201).json({ success: true, message: "item added to the wishlist successfully" });
+            res.status(201).json({
+              success: true,
+              message: "item added to the wishlist successfully",
+            });
           }
         );
       } else {
         console.log("item is already in the wishlist.");
-        res.status(200).json({ success: true, message: "item is already in the wishlist" });
+        res
+          .status(200)
+          .json({ success: true, message: "item is already in the wishlist" });
       }
     }
   );
 };
-
-
-
-
 
 const getWishlistItems = async (req, res) => {
   try {
@@ -406,26 +407,23 @@ const addtocartBack = async (req, res) => {
 // };
 
 const getCartItems = (req, res) => {
-  console.log('In Get CartItems Api'); 
   try {
     const { userId } = req.params;
-    const qry = 'SELECT * FROM carts WHERE user_id = ?';
+    const qry =
+      "SELECT * FROM carts LEFT JOIN courses ON courses.course_id = carts.item_id WHERE user_id = ?";
 
     db.query(qry, userId, (err, result) => {
       if (err) {
-        console.error('Database query error:', err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        console.error("Database query error:", err);
+        return res
+          .status(500)
+          .json({ success: false, error: "Internal Server Error" });
       }
 
-   
-      if (result.length > 0) {
-        res.json(result); 
-      } else {
-        res.json([]); 
-      }
+      res.send(result);
     });
   } catch (error) {
-    console.error('Server error:', error);
+    console.error("Server error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -804,26 +802,26 @@ const subscriptionPlan = (req, res) => {
     if (!userID || !price || !plane_id || !user_name) {
       return res.status(400).json({
         success: false,
-        message: "Please fill all the required fields."
+        message: "Please fill all the required fields.",
       });
     }
 
     // Insert into userSubscription
     db.query(
-      'INSERT INTO userSubscription (plane_id, user_id, user_name, price) VALUES (?, ?, ?, ?)',
+      "INSERT INTO userSubscription (plane_id, user_id, user_name, price) VALUES (?, ?, ?, ?)",
       [plane_id, userID, user_name, price],
       (err, userResult) => {
         if (err) {
           return res.status(500).json({
             success: false,
             message: "Error inserting into userSubscription",
-            error: err
+            error: err,
           });
         }
 
         res.status(201).json({
           success: true,
-          message: "Subscription added successfully"
+          message: "Subscription added successfully",
         });
       }
     );
@@ -831,7 +829,7 @@ const subscriptionPlan = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -839,86 +837,85 @@ const subscriptionPlan = (req, res) => {
 const subscriptionController = (req, res) => {
   try {
     const { currDate, expiryDate, plane_id, plan_name, price } = req.body;
-    
+
     // Insert into subscriptionPlane
     db.query(
-      'INSERT INTO subscriptionPlane (plane_id, plan_name, created_at, expiryDate, price) VALUES (?, ?, ?, ?, ?)',
+      "INSERT INTO subscriptionPlane (plane_id, plan_name, created_at, expiryDate, price) VALUES (?, ?, ?, ?, ?)",
       [plane_id, plan_name, currDate, expiryDate, price],
       (err, planeResult) => {
         if (err) {
           return res.status(500).json({
             success: false,
             message: "Error inserting into subscriptionPlane",
-            error: err
+            error: err,
           });
         }
-        
+
         // If insertion successful
         return res.status(200).json({
           success: true,
           message: "Subscription plan inserted successfully",
-          data: planeResult // Optionally, send inserted data back if needed
+          data: planeResult, // Optionally, send inserted data back if needed
         });
       }
     );
-
   } catch (err) {
     console.error("Error in subscriptionController:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: err.message
+      error: err.message,
     });
   }
 };
 const getSubscriptionPlans = (req, res) => {
-  db.query('SELECT * FROM subscriptionPlane', (err, results) => {
+  db.query("SELECT * FROM subscriptionPlane", (err, results) => {
     if (err) {
-      console.error('Error fetching subscription plans:', err);
+      console.error("Error fetching subscription plans:", err);
       return res.status(500).json({
         success: false,
-        message: 'Failed to fetch subscription plans',
-        error: err
+        message: "Failed to fetch subscription plans",
+        error: err,
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Subscription plans fetched successfully',
-      data: results // Assuming `results` is an array of subscription plans from the database
+      message: "Subscription plans fetched successfully",
+      data: results, // Assuming `results` is an array of subscription plans from the database
     });
   });
 };
-// invoice 
+// invoice
 const invoiceController = (req, res) => {
   try {
     const { action } = req.params;
-    
+
     switch (action) {
-      case 'create':
+      case "create":
         createInvoice(req, res);
         break;
-      case 'getAll':
+      case "getAll":
         getAllInvoices(req, res);
         break;
-      case 'getById':
+      case "getById":
         getInvoiceById(req, res);
         break;
-      case 'update':
+      case "update":
         updateInvoice(req, res);
         break;
-      case 'delete':
+      case "delete":
         deleteInvoice(req, res);
         break;
       default:
-        res.status(404).json({ error: 'Invalid action' });
+        res.status(404).json({ error: "Invalid action" });
     }
   } catch (err) {
     console.error("Error in invoiceController:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -931,21 +928,25 @@ const createInvoice = (req, res) => {
 
   db.query(insertQuery, values, (error, results, fields) => {
     if (error) {
-      console.error('Error creating invoice:', error);
-      res.status(500).json({ error: 'Failed to create invoice' });
+      console.error("Error creating invoice:", error);
+      res.status(500).json({ error: "Failed to create invoice" });
       return;
     }
-    
+
     // Fetch the inserted invoice to return as response
     const fetchQuery = `SELECT * FROM invoices WHERE invoice_no = ?`;
-    db.query(fetchQuery, results.insertId, (fetchError, fetchResults, fetchFields) => {
-      if (fetchError) {
-        console.error('Error fetching created invoice:', fetchError);
-        res.status(500).json({ error: 'Failed to fetch created invoice' });
-        return;
+    db.query(
+      fetchQuery,
+      results.insertId,
+      (fetchError, fetchResults, fetchFields) => {
+        if (fetchError) {
+          console.error("Error fetching created invoice:", fetchError);
+          res.status(500).json({ error: "Failed to fetch created invoice" });
+          return;
+        }
+        res.status(201).json(fetchResults[0]);
       }
-      res.status(201).json(fetchResults[0]);
-    });
+    );
   });
 };
 
@@ -955,8 +956,8 @@ const getAllInvoices = (req, res) => {
 
   db.query(query, (error, results, fields) => {
     if (error) {
-      console.error('Error fetching invoices:', error);
-      res.status(500).json({ error: 'Failed to fetch invoices' });
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ error: "Failed to fetch invoices" });
       return;
     }
     res.status(200).json(results);
@@ -969,12 +970,12 @@ const getInvoiceById = (req, res) => {
   const query = `SELECT * FROM invoices WHERE invoice_no = ?`;
   db.query(query, id, (error, results, fields) => {
     if (error) {
-      console.error('Error fetching invoice:', error);
-      res.status(500).json({ error: 'Failed to fetch invoice' });
+      console.error("Error fetching invoice:", error);
+      res.status(500).json({ error: "Failed to fetch invoice" });
       return;
     }
     if (results.length === 0) {
-      res.status(404).json({ error: 'Invoice not found' });
+      res.status(404).json({ error: "Invoice not found" });
     } else {
       res.status(200).json(results[0]);
     }
@@ -990,21 +991,21 @@ const updateInvoice = (req, res) => {
 
   db.query(updateQuery, values, (error, results, fields) => {
     if (error) {
-      console.error('Error updating invoice:', error);
-      res.status(500).json({ error: 'Failed to update invoice' });
+      console.error("Error updating invoice:", error);
+      res.status(500).json({ error: "Failed to update invoice" });
       return;
     }
-    
+
     // Fetch the updated invoice to return as response
     const fetchQuery = `SELECT * FROM invoices WHERE invoice_no = ?`;
     db.query(fetchQuery, id, (fetchError, fetchResults, fetchFields) => {
       if (fetchError) {
-        console.error('Error fetching updated invoice:', fetchError);
-        res.status(500).json({ error: 'Failed to fetch updated invoice' });
+        console.error("Error fetching updated invoice:", fetchError);
+        res.status(500).json({ error: "Failed to fetch updated invoice" });
         return;
       }
       if (fetchResults.length === 0) {
-        res.status(404).json({ error: 'Invoice not found' });
+        res.status(404).json({ error: "Invoice not found" });
       } else {
         res.status(200).json(fetchResults[0]);
       }
@@ -1019,12 +1020,12 @@ const deleteInvoice = (req, res) => {
 
   db.query(deleteQuery, id, (error, results, fields) => {
     if (error) {
-      console.error('Error deleting invoice:', error);
-      res.status(500).json({ error: 'Failed to delete invoice' });
+      console.error("Error deleting invoice:", error);
+      res.status(500).json({ error: "Failed to delete invoice" });
       return;
     }
     if (results.affectedRows === 0) {
-      res.status(404).json({ error: 'Invoice not found' });
+      res.status(404).json({ error: "Invoice not found" });
     } else {
       res.status(204).end(); // Respond with 204 No Content on successful deletion
     }

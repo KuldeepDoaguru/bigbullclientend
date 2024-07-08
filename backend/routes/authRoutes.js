@@ -14,6 +14,7 @@ const {
   verifyOtp,
   handleContactForm,
   sendOtpAdminRegistration,
+  contactRequest,
 } = require("../controllers/authController.js");
 const {
   addCourseVideos,
@@ -52,7 +53,7 @@ router.post("/login", loginController);
 router.post("/sendOtp", sendOtp);
 router.post("/verifyOtp", verifyOtp);
 router.post("/updatePassword", updatePassword);
-router.post("/add-to-cart", addToCart);
+router.post("/add-to-cart/:user_id/:item_id", addToCart);
 router.get("/getAllCourses", getAllCourses);
 router.get("/thumbnail/:courseId", thumbnail);
 router.get("/coursePage/:courseId", coursePage);
@@ -81,6 +82,7 @@ router.get(`/videoListViaCourseId/:courseId`, videoListViaCourseId);
 router.get("/profilePictureView/:userId", profilePictureView);
 router.get("/contactInquiry", contactInquiry);
 router.get("/getBoughtCourseDetails", getBoughtCourseDetails);
+router.post("/contactRequest", contactRequest);
 
 // router.post("/sendOtpAdminRegistration", sendOtpAdminRegistration);
 

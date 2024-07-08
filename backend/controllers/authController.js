@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const JWT = require("jsonwebtoken");
 const { db } = require("../config/db");
+const moment = require("moment-timezone");
 const bcrypt = require("bcrypt");
 const sql = require("mysql");
 dotenv.config();
@@ -883,6 +884,54 @@ async function handleContactForm(req, res) {
   }
 }
 
+const contactRequest = async (req, res) => {
+  const time = moment.tz("Asia/Kolkata").format("DD-MM-YYYY HH:mm:ss");
+  try {
+    const { email, name, message, number } = req.body;
+
+    if (!email || !name || !message || !number) {
+      return res
+        .status(400)
+        .json({ error: "Missing required fields in the request." });
+    }
+
+    // Configure Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAILSENDER,
+        pass: process.env.EMAILPASSWORD,
+      },
+    });
+
+    console.log("email", email);
+    const mailOptions = {
+      from: process.env.EMAILSENDER,
+      to: email,
+      subject: "Enquiry from website",
+      text: `Hello ${name},\n\nYou wrote: "${message}"\n\nYour contact number is: ${number}`,
+    };
+
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("Email sent:", info.response);
+
+    // Save data to the database
+    const insertQuery = `INSERT INTO inquiry_mail (name, email, mobile, message, time) VALUES (?, ?, ?, ?, ?)`;
+    const values = [name, email, number, message, time];
+
+    const result = db.query(insertQuery, values);
+
+    console.log("Data saved to the database:", result);
+
+    res.status(200).send("Email sent and data saved successfully!");
+  } catch (error) {
+    console.error("An error occurred:", error);
+    res.status(500).send("An error occurred while processing the request.");
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
@@ -903,5 +952,6 @@ module.exports = {
   contactInquiry,
   getBoughtCourseDetails,
   handleContactForm,
+  contactRequest,
   // sendOtpAdminRegistration,
 };

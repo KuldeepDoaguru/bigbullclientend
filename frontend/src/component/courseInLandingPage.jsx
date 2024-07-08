@@ -3,7 +3,10 @@ import courseThumbain from "../Assets/courseThumbnail.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { SiOpenlayers } from "react-icons/si";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import cogoToast from "cogo-toast";
 
 const courseCardData = [
   {
@@ -53,6 +56,9 @@ const courseCardData = [
 const CoursesInLandingPage = ({ sectionRef }) => {
   // console.log('render');
   const navigate = useNavigate();
+  const [allCourse, setAllCourse] = useState([]);
+  const user = useSelector((state) => state.user);
+  console.log(user);
   const scrollRef = useRef(null);
   const handleCartClick = () => {
     navigate("/cart");
@@ -101,6 +107,35 @@ const CoursesInLandingPage = ({ sectionRef }) => {
       });
     };
   }, []);
+
+  const getCourses = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:6060/api/v1/auth/getAllCourses"
+      );
+      setAllCourse(data.result);
+    } catch (error) {
+      console.log("Error getting courses ", error);
+    }
+  };
+
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  console.log(allCourse);
+
+  const addCart = async (id) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+      );
+      cogoToast.success("Course added to cart successfully");
+    } catch (error) {
+      console.log(error);
+      cogoToast.error(error?.response.data?.message);
+    }
+  };
   return (
     <>
       <Container>
@@ -118,16 +153,16 @@ const CoursesInLandingPage = ({ sectionRef }) => {
               className="course-card-scroll md:p-8 lg:p-0 py-10 gap-2.5 lg:max-xl:gap-0 sm:grid flex grid-cols-1 sm:max-lg:gap-8 lg:grid-cols-3 xl:flex flex-wrap justify-center m-auto xl:max-w-screen-xl px-4"
             >
               {/* card */}
-              {courseCardData.map((card) => (
+              {allCourse?.slice(1, 4)?.map((card) => (
                 <>
                   <div className="course-card-container mb-10 sm:m-0 sm:max-w-[640px] md:max-w-screen lg:max-xl:max-w-[318px] sm:m-auto ">
                     <div
-                      className={`course-card card-stretched course-card-${card.cardPosition} rounded-lg p-2 sm:p-4 pt-2 `}
+                      className={`course-card card-stretched course-card-center rounded-lg p-2 sm:p-4 pt-2 `}
                     >
                       {/* image */}
                       <div className="h-52 w-64 sm:w-72 md:w-80 lg:max-xl:w-[19rem]">
                         <img
-                          src={card.imageUrl}
+                          src={courseThumbain}
                           alt=""
                           className="h-full object-cover border-8  border-white rounded-2xl "
                         />
@@ -136,13 +171,11 @@ const CoursesInLandingPage = ({ sectionRef }) => {
                       <div className="">
                         <div className=" max-w-64 sm:max-w-80 py-1 sm:py-2 px-2">
                           <button className="bg-[#2495D6] text-white py-0.5 sm:py-1 px-3 rounded-md">
-                            {card.level}
-                          </button>
-                          {/* <p className="text-[#2495D6] text-sm sm:text-base my-2 sm:my-2.5 ">
                             {card.category}
-                          </p> */}
-                          <p className="font-bold text-base sm:text-xl font-bold">
-                            {card.title}
+                          </button>
+
+                          <p className="font-bold text-base sm:text-xl font-bold h-20">
+                            {card.course_name}
                           </p>
                           <p className="text-sm sm:text-sm font-semibold my-1 sm:my-2.5 ">
                             {card.description}
@@ -174,12 +207,25 @@ const CoursesInLandingPage = ({ sectionRef }) => {
                             <p className="mb-2 text-base font-bold sm:text-xl">
                               {card.price} Rs
                             </p>
-                            <button
-                              onClick={handleCartClick}
-                              className="text-white bg-red-700 text-sm sm:text-base py-1 px-3 rounded-xl "
-                            >
-                              Add to cart
-                            </button>
+                            {user?.id === null ? (
+                              <>
+                                <button
+                                  disabled
+                                  className="text-white bg-red-300 text-sm sm:text-base py-1 px-3 rounded-xl "
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => addCart(card.course_id)}
+                                  className="text-white bg-red-700 text-sm sm:text-base py-1 px-3 rounded-xl "
+                                >
+                                  Add to cart
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
