@@ -8,64 +8,6 @@ import axios from "axios";
 import cogoToast from "cogo-toast";
 import moment from "moment";
 
-const courses = [
-  {
-    id: 1,
-    title: "React Basics",
-    category: "React",
-    price: 49.99,
-    date: "2024-05-01",
-    pic: "https://res.cloudinary.com/dxf0umsgw/image/upload/v1717846574/download_1_tqjmbq.png",
-    instructor: "John Doe",
-    description: "Learn the basics of React in this comprehensive course.",
-    rating: 4.5,
-  },
-  {
-    id: 2,
-    title: "Advanced React",
-    category: "React",
-    price: 99.99,
-    date: "2024-03-12",
-    pic: "https://res.cloudinary.com/dxf0umsgw/image/upload/v1717846920/advancereact_polyvq.jpg",
-    instructor: "Jane Smith",
-    description: "Take your React skills to next level with advanced course.",
-    rating: 4.8,
-  },
-  {
-    id: 3,
-    title: "JavaScript Basics",
-    category: "JavaScript",
-    price: 29.99,
-    date: "2023-06-11",
-    pic: "https://res.cloudinary.com/dxf0umsgw/image/upload/v1717846573/javascriptimage_t2rwp1.png",
-    instructor: "Alex Johnson",
-    description: "Master  of JavaScript with hands-on examples.",
-    rating: 4.7,
-  },
-  {
-    id: 4,
-    title: "Node.js Fundamentals",
-    category: "Node.js",
-    price: 59.99,
-    date: "2023-04-01",
-    pic: "https://th.bing.com/th/id/OIP.M1U-BOiIzjE8ERoPA2GqpQHaE8?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    instructor: "Emily Brown",
-    description: "Learn scalable web applications using Node.js.",
-    rating: 4.9,
-  },
-  {
-    id: 5,
-    title: "Tailwind CSS",
-    category: "CSS",
-    price: 19.99,
-    date: "2023-01-10",
-    pic: "https://res.cloudinary.com/dxf0umsgw/image/upload/v1717846203/tailwindimage_erefez.jpg",
-    instructor: "David Wilson",
-    description: "Understand the Flexbox layout for modern web design.",
-    rating: 4.6,
-  },
-];
-
 const CourseComponent = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
@@ -393,7 +335,7 @@ const CourseComponent = () => {
                               <>
                                 {" "}
                                 <button
-                                  onClick={addCart}
+                                  onClick={() => addCart(course.course_id)}
                                   className={`text-white bg-red-700 text-sm sm:text-md py-1 px-3 rounded-xl`}
                                 >
                                   Add to cart

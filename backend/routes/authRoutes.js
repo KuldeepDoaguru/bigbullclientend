@@ -5,26 +5,19 @@ const { fileURLToPath } = require("url");
 const { dirname } = require("path");
 const {
   loginController,
-  profilePictureView,
   registerController,
   sendOtp,
   updatePassword,
   contactInquiry,
   getBoughtCourseDetails,
   verifyOtp,
-  handleContactForm,
-  sendOtpAdminRegistration,
   contactRequest,
+  getBoughtCourseViaId,
 } = require("../controllers/authController.js");
 const {
-  addCourseVideos,
   addToCart,
   coursePage,
-  createCourse,
-  deleteCourse,
-  editCourse,
   getAllCourses,
-  thumbnail,
   videoListViaCourseId,
 } = require("../controllers/ItemController.js");
 
@@ -44,8 +37,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/add-course", upload.single("thumbnails"), createCourse);
-
 // routing
 // REGISTER || METHOD POST
 router.post("/register", upload.single("profilePicture"), registerController);
@@ -55,35 +46,11 @@ router.post("/verifyOtp", verifyOtp);
 router.post("/updatePassword", updatePassword);
 router.post("/add-to-cart/:user_id/:item_id", addToCart);
 router.get("/getAllCourses", getAllCourses);
-router.get("/thumbnail/:courseId", thumbnail);
 router.get("/coursePage/:courseId", coursePage);
-router.put("/editCourse/:courseId", upload.single("thumbnails"), editCourse);
-router.delete("/deleteCourse/:courseId", deleteCourse);
-router.post("/sendMail", handleContactForm);
-
-const Videostorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "videoCourse/"); // Specify the upload directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname); // Use the original filename
-  },
-});
-
-const Videoupload = multer({ storage: Videostorage });
-
-router.post(
-  "/courses/:courseId/videos",
-  Videoupload.single("videoFile"),
-  addCourseVideos
-);
-
 router.get(`/videoListViaCourseId/:courseId`, videoListViaCourseId);
-router.get("/profilePictureView/:userId", profilePictureView);
 router.get("/contactInquiry", contactInquiry);
 router.get("/getBoughtCourseDetails", getBoughtCourseDetails);
 router.post("/contactRequest", contactRequest);
-
-// router.post("/sendOtpAdminRegistration", sendOtpAdminRegistration);
+router.get("/getBoughtCourseViaId/:uid", getBoughtCourseViaId);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 import axios from "axios";
+import cogoToast from "cogo-toast";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,22 @@ const Cart = () => {
     getCarts();
   }, []);
 
+  const deleteCarts = async (id) => {
+    console.log(id);
+    try {
+      const confirm = window.confirm("Are you sure you want to remove");
+      if (confirm) {
+        const res = await axios.delete(
+          `http://localhost:6060/api/v1/auth/removeCartItem/${id}`
+        );
+        cogoToast.success("item removed successfully");
+        getCarts();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log(cartCourses);
 
   const totalAmount = cartCourses.reduce(
@@ -45,6 +62,56 @@ const Cart = () => {
 
   const NetCartAmount = totalAmount - (totalTax + totalDiscount);
   console.log(NetCartAmount);
+
+  const courseIdFilter = cartCourses
+    ?.filter((course) => course.course_id)
+    ?.map((course) => course.course_id)
+    .join(", ");
+
+  console.log(courseIdFilter);
+
+  const courseNameFilter = cartCourses
+    ?.filter((course) => course.course_name)
+    ?.map((course) => course.course_name)
+    .join(", ");
+
+  console.log(courseNameFilter);
+
+  const clearCart = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:6060/api/v1/auth/clearCart/${user.id}`
+      );
+      getCarts();
+      navigate("/profile");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const formData = {
+    student_id: user.id,
+    student_name: user.email,
+    course_id: courseIdFilter,
+    course_name: courseNameFilter,
+    student_email: user.email,
+    amount: NetCartAmount,
+    status: "success",
+  };
+
+  const buyCourses = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:6060/api/v1/auth/boughtCourse",
+        formData
+      );
+      cogoToast.success("purchased course successfully");
+      clearCart();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <section style={{ minHeight: "70vh" }} className="py-6 pt-0">
@@ -74,7 +141,7 @@ const Cart = () => {
                               alt="Item"
                             />
                           </div>
-                          <figcaption className="ml-4 md:max-w-screen">
+                          <figcaption className="ml-4 md:max-w-[270px]">
                             <div className="max-sm:text-[5vw] font-bold sm:max-md:text-base max-sm:mb-5 max-sm:mt-10">
                               {course.course_name}
                             </div>
@@ -84,18 +151,18 @@ const Cart = () => {
                           </figcaption>
                         </figure>
                       </div>
-                      <div className="flex flex-row sm:flex-col md:flex-row sm:justify-center justify-end text-center gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0">
+                      <div className="flex flex-row sm:flex-col md:flex-row sm:justify-center justify-end text-center gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0 align-center">
                         <div className="self-end min-w-16">
                           <div className="price-wrap lh-sm">
-                            <var className="price text-2xl font-semibold">{`₹ ${course.price}`}</var>
+                            <var className="price text-2xl pb-3 font-semibold">{`₹ ${course.price}`}</var>
                             <br />
                           </div>
                         </div>
                         <div className="flex m self-end justify-self-end sm:ms-0 md:ms-5 lg:ms-16 justify-end">
                           <div className="space-x-2">
                             <p
-                              href="#"
-                              className="btn btn-light text-2xl text-red-500"
+                              onClick={() => deleteCarts(course.cart_id)}
+                              className="btn btn-light text-2xl text-red-500 shadow"
                             >
                               Remove
                             </p>
@@ -130,7 +197,10 @@ const Cart = () => {
                     </dd>
                   </dl>
                   <div className="my-3 space-y-2">
-                    <button className="bg-red-600 py-2 rounded-lg text-white text-lg w-full">
+                    <button
+                      className="bg-red-600 py-2 rounded-lg text-white text-lg w-full"
+                      onClick={buyCourses}
+                    >
                       Buy Now
                     </button>
                     <button

@@ -44,7 +44,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="*" element={<PageNotFound />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={user.id === null ? <Login /> : <ProfilePage />}
+          />
           <Route path="/courses" element={<CourseComponent />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/about" element={<About />} />

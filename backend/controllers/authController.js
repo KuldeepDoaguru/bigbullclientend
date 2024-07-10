@@ -347,21 +347,6 @@ const updatePassword = async (req, res) => {
   }
 };
 
-const manageUsers = async (req, res) => {
-  try {
-    db.query("SELECT * FROM register", (err, result) => {
-      if (err) {
-        res.status(500).json({ data: "Data not found" });
-      } else {
-        res.status(200).json(result);
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 const updateUsers = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -498,128 +483,6 @@ const getUserViaEmail = async (req, res) => {
   }
 };
 
-const AdminRegister = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    db.query(
-      "SELECT * FROM admin_register WHERE email = ?",
-      [email],
-      async (err, result) => {
-        if (err) {
-          console.log(err);
-          return res
-            .status(500)
-            .json({ success: "false", message: "internal server error" });
-        }
-        if (result.length > 0) {
-          return res.status(200).json({
-            success: "false",
-            message: "Admin already registered, Please login",
-          });
-        }
-
-        const insertUserParams = [email, hashedPassword, "notactive"];
-        db.query(
-          "INSERT INTO admin_register (email, password, status) VALUES(?,?, ?)",
-          insertUserParams,
-          (err, result) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).json({
-                success: false,
-                message: "Error registering admin user",
-              });
-            }
-            res.status(201).json({
-              success: true,
-              message: "Admin registered successfull",
-              adminuser: {
-                id: result.insertId,
-                email,
-                status: "notactive",
-              },
-            });
-          }
-        );
-      }
-    );
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
-
-const adminLoginUser = async (req, res) => {
-  console.log("login route");
-  try {
-    const { email, password } = req.body;
-    console.log(email, password);
-    if (!email || !password) {
-      console.log("line numebr  468");
-      return res.status(404).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-    console.log("line number 474");
-    db.query(
-      `SELECT * FROM admin_register WHERE email = ? AND status = 'active'`,
-      [email],
-      async (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-          });
-        }
-        console.log("line number 468");
-        if (result.length === 0) {
-          return res.status(500).json({
-            success: false,
-            message:
-              "Email is not registered Please contact team for furthur assistance",
-          });
-        }
-
-        const user = result[0];
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-          return res.status(200).json({
-            success: "false",
-            message: "Invalid password",
-          });
-        }
-
-        const token = await JWT.sign({ id: user.id }, process.env.JWT_SECRET, {
-          expiresIn: "7d",
-        });
-
-        res.status(200).json({
-          success: "true",
-          message: "Login successful",
-          user: {
-            id: user.admin_id,
-            email: user.email,
-          },
-          token,
-        });
-      }
-    );
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ success: "false", message: "Login failed", error: error });
-  }
-};
-
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -653,126 +516,6 @@ const verifyOtp = async (req, res) => {
       success: false,
       message: "Internal server error",
     });
-  }
-};
-
-const updateAdminPassword = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email, password, or OTP",
-      });
-    }
-
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    db.query(
-      "SELECT * FROM admin_register WHERE email = ?",
-      [email],
-      async (err, result) => {
-        if (err) {
-          console.log(err);
-          return res
-            .status(500)
-            .json({ success: false, message: "Internal Server Error" });
-        }
-
-        if (result.length === 0) {
-          return res
-            .status(404)
-            .json({ success: false, message: "user not found" });
-        }
-
-        const user = result[0];
-
-        db.query(
-          "UPDATE admin_register SET password = ? WHERE email = ?",
-          [hashedPassword, email],
-          (err) => {
-            if (err) {
-              console.log(err);
-              return res
-                .status(500)
-                .json({ success: false, message: "Internal server error" });
-            }
-
-            res
-              .status(200)
-              .json({ success: true, message: "successfully updated" });
-          }
-        );
-      }
-    );
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
-  }
-};
-
-const updateProfilePicture = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const profilePicture = req.file.filename;
-
-    if (!profilePicture) {
-      return res
-        .status(400)
-        .json({ error: "Please provide a valid profile picture." });
-    }
-
-    const user = await userModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-
-    // Update the user's profilePicture field
-    user.profilePicture = profilePicture;
-
-    // Save the user with the updated profilePicture
-    await user.save();
-    return res
-      .status(200)
-      .json({ message: "Profile picture updated successfully." });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-const profilePictureView = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const userPicture = await userModel.findById(userId);
-
-    console.log("user picture:", userPicture);
-
-    if (!userPicture) {
-      return res.status(404).json({ error: "userPicture not found" });
-    }
-
-    console.log("Thumbnails:", userPicture.profilePicture);
-
-    if (
-      !userPicture.profilePicture ||
-      userPicture.profilePicture.length === 0
-    ) {
-      return res
-        .status(404)
-        .json({ error: "userPicture profilePicture not found" });
-    }
-
-    // Send the image data as the response
-    res.send(userPicture.profilePicture);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -851,39 +594,6 @@ const getBoughtCourseDetails = (req, res) => {
   }
 };
 
-// for handling contact form details -Aditya
-async function handleContactForm(req, res) {
-  const { fullname, number, email, message, subject } = req.body;
-
-  const mailSubject = "New Contact Form Submission";
-  const mailText = `You have a new contact form submission from:
-    Full Name: ${fullname}
-    Number: ${number}
-    Email: ${email}
-    Message: ${message}
-    Subject: ${subject}`;
-
-  const mailHtml = `<p>You have a new contact form submission from:</p>
-    <p><strong>Full Name:</strong> ${fullname}</p>
-    <p><strong>Number:</strong> ${number}</p>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Message:</strong> ${message}</p>
-    <p><strong>Subject:</strong> ${subject}</p>
-    `;
-
-  try {
-    await sendMail(
-      "adityasharma10102000@gmail.com",
-      mailSubject,
-      mailText,
-      mailHtml
-    );
-    res.status(200).json({ message: "Email sent successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to send email", error });
-  }
-}
-
 const contactRequest = async (req, res) => {
   const time = moment.tz("Asia/Kolkata").format("DD-MM-YYYY HH:mm:ss");
   try {
@@ -932,26 +642,33 @@ const contactRequest = async (req, res) => {
   }
 };
 
+const getBoughtCourseViaId = (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const selectQuery = "SELECT * FROM bought_courses WHERE student_id = ?";
+    db.query(selectQuery, uid, (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      res.status(200).send(result);
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "internal server error" });
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
   sendOtp,
   updatePassword,
-  manageUsers,
   updateUsers,
   getUserViaId,
   getUserViaEmail,
-  AdminRegister,
-  adminLoginUser,
-  // sendOtpAdmin,
   verifyOtp,
-  updateAdminPassword,
-  updateProfilePicture,
-  profilePictureView,
   deleteUser,
   contactInquiry,
   getBoughtCourseDetails,
-  handleContactForm,
   contactRequest,
-  // sendOtpAdminRegistration,
+  getBoughtCourseViaId,
 };
