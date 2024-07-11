@@ -126,51 +126,63 @@ const Cart = () => {
             <div className="lg:w-3/4 w-full mb-6 lg:mb-0">
               <div className="card border-0">
                 <div className="p-4 md:border-1 rounded-lg md:me-10">
-                  {cartCourses.map((course) => (
-                    <article
-                      key={course.course_id}
-                      style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
-                      className="flex flex-wrap md:flex-nowrap mb-4 p-4 gap-6 sm:gap-0 justify-between"
-                    >
-                      <div className="flex sm:max-lg:grow">
-                        <figure className="flex lg:me-lg-5 flex-wrap">
-                          <div className="flex-shrink-0 w-48 max-sm:w-full">
-                            <img
-                              src={`https://th.bing.com/th/id/OIP.M1U-BOiIzjE8ERoPA2GqpQHaE8?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7`}
-                              className="object-cover rounded-md w-full h-full"
-                              alt="Item"
-                            />
+                  {cartCourses.length === 0 ? (
+                    <>
+                      <p className="text-cyan-600 text-3xl">
+                        No course in the cart
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      {cartCourses.map((course) => (
+                        <article
+                          key={course.course_id}
+                          style={{
+                            boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                          }}
+                          className="flex flex-wrap md:flex-nowrap mb-4 p-4 gap-6 sm:gap-0 justify-between"
+                        >
+                          <div className="flex sm:max-lg:grow">
+                            <figure className="flex lg:me-lg-5 flex-wrap">
+                              <div className="flex-shrink-0 w-48 max-sm:w-full">
+                                <img
+                                  src={`https://th.bing.com/th/id/OIP.M1U-BOiIzjE8ERoPA2GqpQHaE8?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7`}
+                                  className="object-cover rounded-md w-full h-full"
+                                  alt="Item"
+                                />
+                              </div>
+                              <figcaption className="ml-4 md:max-w-[270px]">
+                                <div className="max-sm:text-[5vw] font-bold sm:max-md:text-base max-sm:mb-5 max-sm:mt-10">
+                                  {course.course_name}
+                                </div>
+                                <i className="text-gray-500 text-lg">
+                                  {course.category}
+                                </i>
+                              </figcaption>
+                            </figure>
                           </div>
-                          <figcaption className="ml-4 md:max-w-[270px]">
-                            <div className="max-sm:text-[5vw] font-bold sm:max-md:text-base max-sm:mb-5 max-sm:mt-10">
-                              {course.course_name}
+                          <div className="flex flex-row sm:flex-col md:flex-row sm:justify-center justify-end text-center gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0 align-center">
+                            <div className="self-end min-w-16">
+                              <div className="price-wrap lh-sm">
+                                <var className="price text-2xl pb-3 font-semibold">{`₹ ${course.price}`}</var>
+                                <br />
+                              </div>
                             </div>
-                            <i className="text-gray-500 text-lg">
-                              {course.category}
-                            </i>
-                          </figcaption>
-                        </figure>
-                      </div>
-                      <div className="flex flex-row sm:flex-col md:flex-row sm:justify-center justify-end text-center gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0 align-center">
-                        <div className="self-end min-w-16">
-                          <div className="price-wrap lh-sm">
-                            <var className="price text-2xl pb-3 font-semibold">{`₹ ${course.price}`}</var>
-                            <br />
+                            <div className="flex m self-end justify-self-end sm:ms-0 md:ms-5 lg:ms-16 justify-end">
+                              <div className="space-x-2">
+                                <p
+                                  onClick={() => deleteCarts(course.cart_id)}
+                                  className="btn btn-light text-2xl text-red-500 shadow"
+                                >
+                                  Remove
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex m self-end justify-self-end sm:ms-0 md:ms-5 lg:ms-16 justify-end">
-                          <div className="space-x-2">
-                            <p
-                              onClick={() => deleteCarts(course.cart_id)}
-                              className="btn btn-light text-2xl text-red-500 shadow"
-                            >
-                              Remove
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                        </article>
+                      ))}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -197,12 +209,28 @@ const Cart = () => {
                     </dd>
                   </dl>
                   <div className="my-3 space-y-2">
-                    <button
-                      className="bg-red-600 py-2 rounded-lg text-white text-lg w-full"
-                      onClick={buyCourses}
-                    >
-                      Buy Now
-                    </button>
+                    {cartCourses.length === 0 ? (
+                      <>
+                        {" "}
+                        <button
+                          className="bg-red-300 py-2 rounded-lg text-white text-lg w-full"
+                          disabled
+                        >
+                          Buy Now
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {" "}
+                        <button
+                          className="bg-red-600 py-2 rounded-lg text-white text-lg w-full"
+                          onClick={buyCourses}
+                        >
+                          Buy Now
+                        </button>
+                      </>
+                    )}
+
                     <button
                       className="btn btn-light w-full"
                       onClick={() => navigate("/courses")}

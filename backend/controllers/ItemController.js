@@ -651,6 +651,59 @@ const clearCart = (req, res) => {
   }
 };
 
+const getCourseAboutData = (req, res) => {
+  try {
+    const cid = req.params.cid;
+    const selectQuery = "SELECT * FROM course_about WHERE course_id = ?";
+    db.query(selectQuery, cid, (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      res.status(200).send(result);
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "internal server error" });
+  }
+};
+
+const addCourseReviews = (req, res) => {
+  try {
+    const cid = req.params.cid;
+    const uid = req.params.uid;
+    const { name, review_details, stars } = req.body;
+    const time = moment.tz("Asia/Kolkata").format("DD-MM-YYYY HH:mm:ss");
+    const selectQuery =
+      "SELECT * FROM course_review WHERE course_id = ? AND user_id = ?";
+    db.query(selectQuery, [cid, uid], (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      if (result.length > 0) {
+        res.status(400).json({
+          success: false,
+          message: "your have already reviewed this course.",
+        });
+      } else {
+        const insertQuery =
+          "INSERT INTO course_review (course_id, user_id,	name,	review_details,	stars, datetime) VALUES (?, ?, ?, ?, ?, ?)";
+        const insertParams = [cid, uid, name, review_details, stars, time];
+        db.query(insertQuery, insertParams, (err, result) => {
+          if (err) {
+            res.status(400).json({ success: false, message: err.message });
+          } else {
+            res.status(200).json({
+              success: true,
+              message: "Review Submitted Successfully",
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "internal server error" });
+  }
+};
+
 module.exports = {
   invoiceController,
   createInvoice,
@@ -673,4 +726,6 @@ module.exports = {
   removeCartItem,
   boughtCourse,
   clearCart,
+  getCourseAboutData,
+  addCourseReviews,
 };

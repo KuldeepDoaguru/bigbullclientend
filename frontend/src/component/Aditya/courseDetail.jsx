@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseHeader from "./CourseHeader";
 import CourseAbout from "./CourseAbout";
@@ -7,102 +7,62 @@ import CourseReviews from "./CourseReviews";
 import CourseFAQs from "./CourseFAQs";
 import CourseModules from "./CourseModules";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const CourseDetail = () => {
   const user = useSelector((state) => state.user);
   console.log(user);
   const { id } = useParams();
   const history = useNavigate();
-  const courses = [
-    {
-      id: 1,
-      title: "React Basics",
-      category: "React",
-      description: "Learn the basics of React.",
-      price: "10,000",
-      instructor: {
-        name: "John Doe",
-        bio: "Experienced React developer with a passion for teaching.",
-        image:
-          "https://wallpaperbat.com/img/7200619-anime-man-in-lofi-desktop-room-wallpaper.png",
-      },
-      modules: [
-        {
-          title: "Introduction to React",
-          submodules: [
-            {
-              title: "What is React?",
-              videoUrl: "https://www.youtube.com/embed/vz1RlUyrc3w",
-            },
-            {
-              title: "Getting Started with React",
-              videoUrl: "https://www.youtube.com/embed/vz1RlUyrc3w",
-            },
-          ],
-        },
-        {
-          title: "React Components",
-          submodules: [
-            {
-              title: "Functional Components",
-              videoUrl: "https://www.youtube.com/embed/vz1RlUyrc3w",
-            },
-            {
-              title: "Class Components",
-              videoUrl: "https://www.youtube.com/embed/vz1RlUyrc3w",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "JavaScript Basics",
-      category: "JavaScript",
-      description: "Learn the basics of JavaScript.",
-      price: "4500",
-      instructor: {
-        name: "Jane Smith",
-        bio: "JavaScript enthusiast with a knack for simplifying complex concepts.",
-        image:
-          "https://wallpaperbat.com/img/7200619-anime-man-in-lofi-desktop-room-wallpaper.png",
-      },
-      modules: [
-        {
-          title: "Introduction to JavaScript",
-          submodules: [
-            {
-              title: "JavaScript Fundamentals",
-              videoUrl: "https://www.youtube.com/embed/ajdRvxDWH4w",
-            },
-            {
-              title: "Variables and Data Types",
-              videoUrl: "https://www.youtube.com/embed/ajdRvxDWH4w",
-            },
-          ],
-        },
-        {
-          title: "JavaScript Functions",
-          submodules: [
-            {
-              title: "Defining Functions",
-              videoUrl: "https://www.youtube.com/embed/ajdRvxDWH4w",
-            },
-            {
-              title: "Function Expressions",
-              videoUrl: "https://www.youtube.com/embed/ajdRvxDWH4w",
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  const [courseData, setCourseData] = useState([]);
+  const [courseAbout, setCourseAbout] = useState([]);
+  const [courseChapter, setCourseChapter] = useState([]);
 
-  const course = courses.find((course) => course.id === parseInt(id));
+  const courseDetails = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:6060/api/v1/auth/coursePage/${id}`
+      );
+      setCourseData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCourseAbout = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:6060/api/v1/auth/getCourseAboutData/${id}`
+      );
+      setCourseAbout(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCourseChapter = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:6060/api/v1/auth/getChapterViaId/${id}`
+      );
+      setCourseChapter(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    courseDetails();
+    getCourseAbout();
+    getCourseChapter();
+  }, []);
+
+  console.log(courseData);
+
   const [activeModuleIndex, setActiveModuleIndex] = useState(null);
   const [activeVideoUrl, setActiveVideoUrl] = useState(null);
 
-  if (!course) {
+  if (courseData?.length === 0) {
     return (
       <div className="container mx-auto p-4 text-center text-red-600">
         Course not found
@@ -122,23 +82,18 @@ const CourseDetail = () => {
     // Add to cart logic here
   };
 
+  console.log(courseAbout);
+
   return (
     <div className="bg-gray-100 p-6">
       <CourseHeader
-        course={course}
+        course={courseData}
         onStartLearning={handleStartLearning}
         onAddToFavorites={handleAddToFavorites}
         onAddToCart={handleAddToCart}
       />
-      <CourseAbout course={course} />
-      <CourseModules
-        course={course}
-        activeModuleIndex={activeModuleIndex}
-        setActiveModuleIndex={setActiveModuleIndex}
-        activeVideoUrl={activeVideoUrl}
-        setActiveVideoUrl={setActiveVideoUrl}
-      />
-      <CourseInstructor instructor={course.instructor} />
+      <CourseAbout course={courseAbout} />
+      <CourseModules course={courseChapter.result} />
       <CourseReviews />
       <CourseFAQs />
     </div>

@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
-
-const config = {
-  cUrl: 'https://api.countrystatecity.in/v1/countries',
-  ckey: 'NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA=='
-};
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const MyEnroll = () => {
+  const [profilePicture, setProfilePicture] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     phone: "",
     gender: "",
@@ -23,7 +19,6 @@ const MyEnroll = () => {
     city: "",
     address: "",
     dob: "",
-    profilePicture: null,
   });
 
   const [showPassword, setShowPassword] = useState({
@@ -31,11 +26,100 @@ const MyEnroll = () => {
     confirmPassword: false,
   });
 
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
-
   const navigate = useNavigate();
+  const [allCountries, setAllCountries] = useState([]);
+  const [allStates, setAllStates] = useState([]);
+  const [allCities, setAllCities] = useState([]);
+
+  const getAllCountries = async () => {
+    try {
+      const res = await axios.get(
+        `https://api.countrystatecity.in/v1/countries`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
+          },
+        }
+      );
+
+      setAllCountries(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const countryFilter = allCountries?.filter((country) => {
+    if (formData.country) {
+      return country.name === formData.country;
+    } else {
+      return true;
+    }
+  });
+
+  console.log(countryFilter[0]?.iso2);
+
+  const getAllStates = async () => {
+    try {
+      const res = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${countryFilter[0]?.iso2}/states`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
+          },
+        }
+      );
+
+      setAllStates(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filterCities = allStates?.filter((state) => {
+    if (formData.state) {
+      return state.name === formData.state;
+    } else {
+      return true;
+    }
+  });
+
+  console.log(filterCities);
+
+  const getAllCities = async () => {
+    try {
+      const res = await axios.get(
+        `https://api.countrystatecity.in/v1/countries/${countryFilter[0]?.iso2}/states/${filterCities[0]?.iso2}/cities`,
+        {
+          headers: {
+            "X-CSCAPI-KEY":
+              "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
+          },
+        }
+      );
+
+      setAllCities(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // console.log(allCountries);
+  // console.log(allStates);
+  // console.log(allCities);
+
+  useEffect(() => {
+    getAllCountries();
+  }, []);
+
+  useEffect(() => {
+    getAllStates();
+  }, [countryFilter]);
+
+  useEffect(() => {
+    getAllCities();
+  }, [filterCities]);
 
   const togglePasswordVisibility = (pass) => {
     setShowPassword({ ...showPassword, [pass]: !showPassword[pass] });
@@ -43,82 +127,108 @@ const MyEnroll = () => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "file" ? files[0] : value,
-    });
+    if (name === "phone") {
+      if (/^\d*$/.test(value) && value.length <= 10) {
+        setFormData((prevEmpData) => ({
+          ...prevEmpData,
+          [name]: value,
+        }));
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "file" ? files[0] : value,
+      });
+    }
+  };
+
+  const handleEmpProfilePicture = (e) => {
+    const selectedFile = e.target.files[0];
+    console.log(selectedFile);
+
+    if (selectedFile) {
+      const allowedSizes = [
+        { width: 2286, height: 2858 },
+        { width: 1920, height: 2400 },
+        { width: 1280, height: 1600 },
+        { width: 512, height: 640 },
+      ];
+
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        const image = new Image();
+        image.src = reader.result;
+
+        image.onload = () => {
+          const isValidSize = allowedSizes.some(
+            (size) => size.width === image.width && size.height === image.height
+          );
+
+          if (isValidSize) {
+            setProfilePicture({
+              file: selectedFile,
+              imageUrl: reader.result,
+            });
+          } else {
+            alert(
+              `Invalid image size (${image.width}x${image.height}). Allowed sizes are: 2286×2858, 1920×2400, 1280×1600, 512×640.`
+            );
+            // Reset the file input
+            e.target.value = "";
+          }
+        };
+      };
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    let mergeName = `${formData.firstName} ${formData.lastName}`;
-    let postData = {...formData,name: mergeName} 
-    // setFormData({...formData, name: mergeName});
+    const formDetails = new FormData();
+
+    // Append user.data fields to formData
+    for (const key in formData) {
+      formDetails.append(key, formData[key]);
+    }
+    formDetails.append("profilePicture", profilePicture.file);
+    console.log(formData, profilePicture.file);
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "http://localhost:6060/api/v1/auth/register",
+        formDetails,
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify(postData),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log("Form submitted successfully:", data);
-      toast.success('Successfuly Enrolled')
-      
+      toast.success("Successfuly Enrolled");
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        phone: "",
+        gender: "",
+        password: "",
+        cpassword: "",
+        country: "",
+        state: "",
+        city: "",
+        address: "",
+        dob: "",
+      });
+      setProfilePicture({
+        file: null,
+      });
       navigate("/login");
     } catch (error) {
-      toast.error('Error'); 
+      toast.error("Error");
       console.error("Error submitting form:", error);
     }
   };
 
-  const fetchCountries = async () => {
-    try {
-      const response = await axios.get(config.cUrl, {
-        headers: { "X-CSCAPI-KEY": config.ckey }
-      });
-      setCountries(response.data.map(country => ({ code: country.iso2, name: country.name })));
-    } catch (error) {
-      console.error("Error loading countries:", error);
-    }
-  };
-
-  const fetchStates = async (countryCode) => {
-    try {
-      const response = await axios.get(`${config.cUrl}/${countryCode}/states`, {
-        headers: { "X-CSCAPI-KEY": config.ckey }
-      });
-      setStates(response.data.map(state => ({ code: state.iso2, name: state.name })));
-    } catch (error) {
-      console.error("Error loading states:", error);
-    }
-  };
-
-  const fetchCities = async (countryCode, stateCode) => {
-    try {
-      const response = await axios.get(`${config.cUrl}/${countryCode}/states/${stateCode}/cities`, {
-        headers: { "X-CSCAPI-KEY": config.ckey }
-      });
-      setCities(response.data.map(city => ({ code: city.iso2, name: city.name })));
-    } catch (error) {
-      console.error("Error loading cities:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCountries();
-  }, []);
-
+  console.log(formData);
   return (
     <div className="max-w-screen-xl pt-10 mx-auto my-16">
       <div className="mb-5">
@@ -130,35 +240,50 @@ const MyEnroll = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
           <div>
-            <label htmlFor="firstName" className="block mb-1 text-lg font-semibold">First Name</label>
+            <label
+              htmlFor="firstname"
+              className="block mb-1 text-lg font-semibold"
+            >
+              First Name
+            </label>
             <input
               type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
+              id="firstname"
+              name="firstname"
+              placeholder="First Name"
+              value={formData.firstname}
               onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             />
           </div>
           <div>
-            <label htmlFor="lastName" className="block mb-1 text-lg font-semibold">Last Name</label>
+            <label
+              htmlFor="lastname"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Last Name
+            </label>
             <input
               type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
+              id="lastname"
+              name="lastname"
+              placeholder="Last Name"
+              value={formData.lastname}
               onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             />
           </div>
           <div>
-            <label htmlFor="email" className="block mb-1 text-lg font-semibold">Email</label>
+            <label htmlFor="email" className="block mb-1 text-lg font-semibold">
+              Email
+            </label>
             <input
               type="email"
               id="email"
               name="email"
+              placeholder="Your email"
               value={formData.email}
               onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -166,11 +291,14 @@ const MyEnroll = () => {
             />
           </div>
           <div>
-            <label htmlFor="phone" className="block mb-1 text-lg font-semibold">Phone</label>
+            <label htmlFor="phone" className="block mb-1 text-lg font-semibold">
+              Phone
+            </label>
             <input
               type="tel"
               id="phone"
               name="phone"
+              placeholder="Your phone number"
               value={formData.phone}
               onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -178,7 +306,12 @@ const MyEnroll = () => {
             />
           </div>
           <div>
-            <label htmlFor="gender" className="block mb-1 text-lg font-semibold">Gender</label>
+            <label
+              htmlFor="gender"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Gender
+            </label>
             <select
               id="gender"
               name="gender"
@@ -194,12 +327,18 @@ const MyEnroll = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="password" className="block mb-1 text-lg font-semibold">Password</label>
+            <label
+              htmlFor="password"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword.password ? "text" : "password"}
                 id="password"
                 name="password"
+                placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -208,19 +347,25 @@ const MyEnroll = () => {
               <button
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center px-3"
-                onClick={() => togglePasswordVisibility('password')}
+                onClick={() => togglePasswordVisibility("password")}
               >
                 {showPassword.password ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
           <div>
-            <label htmlFor="cpassword" className="block mb-1 text-lg font-semibold">Confirm Password</label>
+            <label
+              htmlFor="cpassword"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Confirm Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword.confirmPassword ? "text" : "password"}
                 id="cpassword"
                 name="cpassword"
+                placeholder="Confirm Password"
                 value={formData.cpassword}
                 onChange={handleChange}
                 className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -229,57 +374,59 @@ const MyEnroll = () => {
               <button
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center px-3"
-                onClick={() => togglePasswordVisibility('confirmPassword')}
+                onClick={() => togglePasswordVisibility("confirmPassword")}
               >
                 {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
           <div>
-            <label htmlFor="country" className="block mb-1 text-lg font-semibold">Country</label>
+            <label
+              htmlFor="country"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Country
+            </label>
             <select
               id="country"
               name="country"
               value={formData.country}
-              onChange={async (e) => {
-                handleChange(e);
-                await fetchStates(e.target.value);
-                setCities([]);
-              }}
+              onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             >
               <option value="">Select your country</option>
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
+              {allCountries.map((country) => (
+                <option key={country.name} value={country.name}>
                   {country.name}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="state" className="block mb-1 text-lg font-semibold">State</label>
+            <label htmlFor="state" className="block mb-1 text-lg font-semibold">
+              State
+            </label>
             <select
               id="state"
               name="state"
               value={formData.state}
-              onChange={async (e) => {
-                handleChange(e);
-                await fetchCities(formData.country, e.target.value);
-              }}
+              onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             >
               <option value="">Select your state</option>
-              {states.map((state) => (
-                <option key={state.code} value={state.code}>
+              {allStates.map((state) => (
+                <option key={state.name} value={state.name}>
                   {state.name}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="city" className="block mb-1 text-lg font-semibold">City</label>
+            <label htmlFor="city" className="block mb-1 text-lg font-semibold">
+              City
+            </label>
             <select
               id="city"
               name="city"
@@ -289,19 +436,25 @@ const MyEnroll = () => {
               required
             >
               <option value="">Select your city</option>
-              {cities.map((city) => (
-                <option key={city.code} value={city.code}>
-                  {city.name}
+              {allCities.map((state) => (
+                <option key={state.name} value={state.name}>
+                  {state.name}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="address" className="block mb-1 text-lg font-semibold">Address</label>
+            <label
+              htmlFor="address"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Address
+            </label>
             <input
               type="text"
               id="address"
               name="address"
+              placeholder="Your address"
               value={formData.address}
               onChange={handleChange}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -309,7 +462,9 @@ const MyEnroll = () => {
             />
           </div>
           <div>
-            <label htmlFor="dob" className="block mb-1 text-lg font-semibold">Date of Birth</label>
+            <label htmlFor="dob" className="block mb-1 text-lg font-semibold">
+              Date of Birth
+            </label>
             <input
               type="date"
               id="dob"
@@ -320,13 +475,22 @@ const MyEnroll = () => {
               required
             />
           </div>
-          <div>
-            <label htmlFor="profilePicture" className="block mb-1 text-lg font-semibold">Profile Picture</label>
+          <div className="">
+            <label
+              htmlFor="profilePicture"
+              className="block mb-1 text-lg font-semibold"
+            >
+              Profile Picture
+            </label>
+            <span className="text-red-400 text-sm">
+              Allowed sizes are: 2286×2858, 1920×2400, 1280×1600, 512×640.
+            </span>
             <input
               type="file"
               id="profilePicture"
               name="profilePicture"
-              onChange={handleChange}
+              accept=".pdf, .jpg, .jpeg, .png"
+              onChange={handleEmpProfilePicture}
               className="w-full p-3 border-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             />
@@ -337,7 +501,7 @@ const MyEnroll = () => {
             type="submit"
             className="px-6 py-3 text-lg font-semibold text-white bg-red-700 hover:bg-red-800   rounded  focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
-          <Toaster />
+            <Toaster />
             Enroll Now
           </button>
         </div>

@@ -15,7 +15,8 @@ const registerController = async (req, res) => {
     const {
       email,
       password,
-      name,
+      firstname,
+      lastname,
       phone,
       gender,
       cpassword,
@@ -24,34 +25,29 @@ const registerController = async (req, res) => {
       city,
       address,
       dob,
-      profilePicture,
     } = req.body;
 
-    // Check if any required fields are missing
-    console.log(
-      email,
-      password,
-      name,
-      phone,
-      gender,
-      cpassword,
-      country,
-      state,
-      address,
-      dob
-    );
+    const profilePicture = req.file;
+    console.log("31", profilePicture);
+
+    const imageUrl = `http://localhost:6060/profilePicture/${profilePicture?.filename}`;
+    console.log("34", imageUrl);
+
     const requiredFields = [
       email,
-      password,
-      name,
+      firstname,
+      lastname,
       phone,
       gender,
+      password,
       cpassword,
       country,
       state,
       address,
       dob,
     ];
+
+    console.log("50", requiredFields);
     if (requiredFields.some((field) => !field)) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -74,19 +70,21 @@ const registerController = async (req, res) => {
 
       // User does not exist, proceed with registration
       const insertUserQuery =
-        "INSERT INTO register (name, email, phone, gender, password, country, state, city, address, dob) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO register (firstname, lastname, email, phone, gender, password, cpassword, country, state, city, address, dob, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
       const insertUserParams = [
-        name,
+        firstname,
+        lastname,
         email,
         phone,
         gender,
+        hashedPassword,
         hashedPassword,
         country,
         state,
         city,
         address,
         dob,
-        profilePicture,
+        imageUrl,
       ];
 
       db.query(insertUserQuery, insertUserParams, (insertErr, insertResult) => {
@@ -350,8 +348,26 @@ const updatePassword = async (req, res) => {
 const updateUsers = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { name, email, phone, gender, country, state, city, address, dob } =
-      req.body;
+    const {
+      email,
+      password,
+      firstname,
+      lastname,
+      phone,
+      gender,
+      cpassword,
+      country,
+      state,
+      city,
+      address,
+      dob,
+    } = req.body;
+
+    const profilePicture = req.file;
+    console.log("31", profilePicture);
+
+    const imageUrl = `http://localhost:6060/profilePicture/${profilePicture?.filename}`;
+    console.log("34", imageUrl);
 
     const getQuery = `SELECT * FROM register WHERE id = ?`;
     db.query(getQuery, [userId], (err, result) => {
@@ -366,9 +382,14 @@ const updateUsers = async (req, res) => {
         const updateFields = [];
         const updateValues = [];
 
-        if (name) {
-          updateFields.push("name = ?");
-          updateValues.push(name);
+        if (firstname) {
+          updateFields.push("firstname = ?");
+          updateValues.push(firstname);
+        }
+
+        if (lastname) {
+          updateFields.push("lastname = ?");
+          updateValues.push(lastname);
         }
 
         if (email) {
@@ -409,6 +430,21 @@ const updateUsers = async (req, res) => {
         if (dob) {
           updateFields.push("dob = ?");
           updateValues.push(dob);
+        }
+
+        if (password) {
+          updateFields.push("password = ?");
+          updateValues.push(password);
+        }
+
+        if (cpassword) {
+          updateFields.push("cpassword = ?");
+          updateValues.push(cpassword);
+        }
+
+        if (profilePicture) {
+          updateFields.push("profile_picture = ?");
+          updateValues.push(imageUrl);
         }
 
         const updateQuery = `UPDATE register SET ${updateFields.join(

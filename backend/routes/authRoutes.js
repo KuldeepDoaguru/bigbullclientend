@@ -24,22 +24,25 @@ const {
 // router object
 const router = express.Router();
 
-const storage = multer.diskStorage({
+const profilePicturestorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "thumbnails/");
+    cb(null, "profilePicture/");
   },
   filename: function (req, file, cb) {
-    const fileName =
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname);
-    cb(null, fileName);
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
   },
 });
 
-const upload = multer({ storage: storage });
+const profilePictureupload = multer({ storage: profilePicturestorage });
 
 // routing
 // REGISTER || METHOD POST
-router.post("/register", upload.single("profilePicture"), registerController);
+router.post(
+  "/register",
+  profilePictureupload.single("profilePicture"),
+  registerController
+);
 router.post("/login", loginController);
 router.post("/sendOtp", sendOtp);
 router.post("/verifyOtp", verifyOtp);

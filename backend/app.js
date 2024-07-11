@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("thumbnails"));
 app.use(express.static("videoCourse"));
-app.use(express.static("questionSheet"));
+// app.use(express.static("questionSheet"));
 app.use(express.static(join(__dirname, "build")));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
 app.use("/thumbnails", express.static(join(__dirname, "thumbnails")));
 app.use("/videoCourse", express.static(join(__dirname, "videoCourse")));
 app.use("/questionSheet", express.static(join(__dirname, "questionSheet")));
+app.use("/profilePicture", express.static(join(__dirname, "profilePicture")));
 
 // rest api
 app.get("/", (req, res) => {

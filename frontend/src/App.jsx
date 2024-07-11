@@ -57,9 +57,15 @@ function App() {
           />
           <Route path="/HelpPage" element={<HelpPage />} />
           <Route path="/Cdetail/:id" element={<CourseDetail />} />
-          <Route path="/Cart" element={<Cart />} />
+          <Route
+            path="/Cart"
+            element={user.id === null ? <Login /> : <Cart />}
+          />
           <Route path="/Footer" element={<Footer />} />
-          <Route path="/Invoice" element={<Invoice />} />
+          <Route
+            path="/Invoice"
+            element={user.id === null ? <Login /> : <Invoice />}
+          />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/Verification" element={<Verification />} />
           <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
@@ -70,8 +76,14 @@ function App() {
           <Route path="/NotificationPage" element={<NotificationPage />} />
           <Route path="/SubscriptionPlans" element={<SubscriptionPlans />} />
           <Route path="/EnrollForm" element={<EnrollForm />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/editProfile" element={<EditProfileComponent />} />
+          <Route
+            path="/profile"
+            element={user.id === null ? <Login /> : <ProfilePage />}
+          />
+          <Route
+            path="/editProfile"
+            element={user.id === null ? <Login /> : <EditProfileComponent />}
+          />
           <Route path="/course-dashboard/:id" element={<Dashboard2 />} />
           <Route path="/intro/:id" element={<Introduction />} />
           <Route path="/forget" element={<ForgetPass />} />
