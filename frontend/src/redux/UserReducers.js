@@ -6,6 +6,7 @@ import { setUser, clearUser, toggleTableRefresh } from "./slicer";
 const initialState = {
   email: "",
   id: null,
+  name: "",
   token: "",
   refreshTable: false,
 };
@@ -18,6 +19,7 @@ export const userReducer = createReducer(initialState, (builder) => {
       console.log(action.payload);
       state.id = action.payload.id;
       state.email = action.payload.email;
+      state.name = action.payload.name;
       state.token = action.payload.token;
       console.log("User State after setUser:", state);
       console.log("User action after setUser:", action.payload);
@@ -26,6 +28,7 @@ export const userReducer = createReducer(initialState, (builder) => {
       state.id = initialState.id;
       state.email = initialState.email;
       state.token = initialState.token;
+      state.name = initialState.name;
     })
     .addCase(toggleTableRefresh, (state) => {
       state.refreshTable = !state.refreshTable;

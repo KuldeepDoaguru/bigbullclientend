@@ -1,7 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const CourseHeader = ({ course, onStartLearning }) => {
-  console.log(course);
+const CourseHeader = ({ course, courseId }) => {
+  const navigate = useNavigate();
+  // console.log(course);
+
+  const handleStartLearning = () => {
+    navigate(`/course-dashboard/${courseId}`);
+  };
   return (
     <header className="bg-white shadow-lg p-6 rounded-lg mb-6">
       <div className="flex flex-col lg:flex-row justify-between items-start">
@@ -14,7 +20,7 @@ const CourseHeader = ({ course, onStartLearning }) => {
           <div className="flex flex-wrap max-sm:space-x-0 space-x-4">
             <button
               className="bg-red-600 text-white px-4 py-2 rounded-md mb-2"
-              onClick={onStartLearning}
+              onClick={handleStartLearning}
             >
               Start learning now
             </button>

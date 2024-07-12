@@ -50,7 +50,7 @@ router.post("/updatePassword", updatePassword);
 router.post("/add-to-cart/:user_id/:item_id", addToCart);
 router.get("/getAllCourses", getAllCourses);
 router.get("/coursePage/:courseId", coursePage);
-router.get(`/videoListViaCourseId/:courseId`, videoListViaCourseId);
+router.get(`/videoListViaCourseId/:courseId/:chid`, videoListViaCourseId);
 router.get("/contactInquiry", contactInquiry);
 router.get("/getBoughtCourseDetails", getBoughtCourseDetails);
 router.post("/contactRequest", contactRequest);

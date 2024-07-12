@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseHeader from "./CourseHeader";
 import CourseAbout from "./CourseAbout";
-import CourseInstructor from "./CourseInstructor";
+// import CourseInstructor from "./CourseInstructor";
 import CourseReviews from "./CourseReviews";
 import CourseFAQs from "./CourseFAQs";
 import CourseModules from "./CourseModules";
@@ -13,10 +13,12 @@ const CourseDetail = () => {
   const user = useSelector((state) => state.user);
   console.log(user);
   const { id } = useParams();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [courseData, setCourseData] = useState([]);
   const [courseAbout, setCourseAbout] = useState([]);
   const [courseChapter, setCourseChapter] = useState([]);
+  const [courseReview, setCourseReview] = useState([]);
+  const [courseFaq, setCourseFaq] = useState([]);
 
   const courseDetails = async () => {
     try {
@@ -51,16 +53,37 @@ const CourseDetail = () => {
     }
   };
 
+  const getReviews = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:6060/api/v1/auth/getCourseReviews/${id}`
+      );
+      setCourseReview(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getFaqCourse = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:6060/api/v1/auth/getCourseFaq/${id}`
+      );
+      setCourseFaq(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     courseDetails();
     getCourseAbout();
     getCourseChapter();
+    getReviews();
+    getFaqCourse();
   }, []);
 
   console.log(courseData);
-
-  const [activeModuleIndex, setActiveModuleIndex] = useState(null);
-  const [activeVideoUrl, setActiveVideoUrl] = useState(null);
 
   if (courseData?.length === 0) {
     return (
@@ -71,7 +94,7 @@ const CourseDetail = () => {
   }
 
   const handleStartLearning = () => {
-    history(`/course-dashboard/${id}`);
+    navigate(`/course-dashboard/${id}`);
   };
 
   const handleAddToFavorites = () => {
@@ -88,14 +111,18 @@ const CourseDetail = () => {
     <div className="bg-gray-100 p-6">
       <CourseHeader
         course={courseData}
-        onStartLearning={handleStartLearning}
+        courseId={id}
         onAddToFavorites={handleAddToFavorites}
         onAddToCart={handleAddToCart}
       />
       <CourseAbout course={courseAbout} />
       <CourseModules course={courseChapter.result} />
-      <CourseReviews />
-      <CourseFAQs />
+      <CourseReviews
+        review={courseReview}
+        courseId={id}
+        getReviews={getReviews}
+      />
+      <CourseFAQs courseFaq={courseFaq} />
     </div>
   );
 };

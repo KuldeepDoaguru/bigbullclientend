@@ -94,12 +94,13 @@ const coursePage = async (req, res) => {
 const videoListViaCourseId = async (req, res) => {
   try {
     const courseId = req.params.courseId;
-    const getQuery = `SELECT * FROM course_videos WHERE course_id = ?`;
-    db.query(getQuery, courseId, (err, result) => {
+    const chid = req.params.chid;
+    const getQuery = `SELECT * FROM course_videos WHERE course_id = ? AND chapter_id = ?`;
+    db.query(getQuery, [courseId, chid], (err, result) => {
       if (err) {
         res.status(500).json({ error: "Invalid course ID" });
       } else {
-        res.status(200).json({ result });
+        res.status(200).send(result);
       }
     });
   } catch (error) {
@@ -672,6 +673,7 @@ const addCourseReviews = (req, res) => {
     const uid = req.params.uid;
     const { name, review_details, stars } = req.body;
     const time = moment.tz("Asia/Kolkata").format("DD-MM-YYYY HH:mm:ss");
+
     const selectQuery =
       "SELECT * FROM course_review WHERE course_id = ? AND user_id = ?";
     db.query(selectQuery, [cid, uid], (err, result) => {
@@ -704,6 +706,36 @@ const addCourseReviews = (req, res) => {
   }
 };
 
+const getCourseReviews = (req, res) => {
+  try {
+    const cid = req.params.cid;
+    const selectQuery = "SELECT * FROM course_review WHERE course_id = ?";
+    db.query(selectQuery, cid, (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      res.status(200).send(result);
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "internal server error" });
+  }
+};
+
+const getCourseFaq = (req, res) => {
+  try {
+    const cid = req.params.cid;
+    const selectQuery = "SELECT * FROM course_faq WHERE course_id = ?";
+    db.query(selectQuery, cid, (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      res.status(200).send(result);
+    });
+  } catch (error) {
+    res.status(200).json({ success: false, message: "internal server error" });
+  }
+};
+
 module.exports = {
   invoiceController,
   createInvoice,
@@ -728,4 +760,6 @@ module.exports = {
   clearCart,
   getCourseAboutData,
   addCourseReviews,
+  getCourseReviews,
+  getCourseFaq,
 };

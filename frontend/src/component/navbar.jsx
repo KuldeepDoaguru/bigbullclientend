@@ -33,9 +33,14 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleRightClick = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <>
       <nav
+        onContextMenu={handleRightClick}
         style={{ maxWidth: "1728px" }}
         className={`border-gray-200 dark:bg-gray-900 w-full bg-white pt-3 max-sm:mb-10 mb-20 mx-auto md:px-2 lg:px-5`}
       >

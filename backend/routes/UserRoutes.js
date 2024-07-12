@@ -29,6 +29,8 @@ const {
   clearCart,
   getCourseAboutData,
   addCourseReviews,
+  getCourseReviews,
+  getCourseFaq,
 } = require("../controllers/ItemController.js");
 const invoiceController = require("../controllers/ItemController.js"); //import all invoice function through this
 const router = express.Router();
@@ -74,5 +76,7 @@ router.post("/boughtCourse", boughtCourse);
 router.delete("/clearCart/:uid", clearCart);
 router.get("/getCourseAboutData/:cid", getCourseAboutData);
 router.post("/addCourseReviews/:cid/:uid", addCourseReviews);
+router.get("/getCourseReviews/:cid", getCourseReviews);
+router.get("/getCourseFaq/:cid", getCourseFaq);
 
 module.exports = router;

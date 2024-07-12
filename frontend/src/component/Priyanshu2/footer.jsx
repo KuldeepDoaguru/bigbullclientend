@@ -8,10 +8,13 @@ import { Link } from "react-router-dom";
 import logo from "../../../public/logo/logo.png";
 
 const Footer = () => {
+  const handleRightClick = (e) => {
+    e.preventDefault();
+  };
   return (
     <>
       <StyledContact>
-        <footer className="">
+        <footer onContextMenu={handleRightClick} className="">
           <div className="main-footer ">
             <div className="footer-content bg-white text-center text-lg p-6">
               <h4
