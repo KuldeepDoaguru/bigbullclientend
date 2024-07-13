@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import {useNavigate} from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 function ForgetPass() {
   const [email, setEmail] = useState("");
-const navigate=useNavigate();
+  const navigate = useNavigate();
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -11,22 +11,24 @@ const navigate=useNavigate();
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:6060/api/v1/auth/sendOtp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "https://test.bigbulls.co.in/api/v1/auth/sendOtp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
       const data = await response.json();
       console.log(data);
-     if(response.ok){
-      toast.success("Otp send to your email");
-      navigate('/ResetPassword');
-     }
+      if (response.ok) {
+        toast.success("Otp send to your email");
+        navigate("/ResetPassword");
+      }
     } catch (error) {
       console.error("Error:", error);
-      
     }
   };
 
@@ -46,10 +48,13 @@ const navigate=useNavigate();
                 alt="Privacy Policy Illustration"
               />
             </div>
-              {/* add responsiveness from medium devices */}
-              <div className="w-full ">
+            {/* add responsiveness from medium devices */}
+            <div className="w-full ">
               <div className="flex items-center justify-center">
-                <form className="w-10/12 md:w-11/12" onSubmit={handleFormSubmit}>
+                <form
+                  className="w-10/12 md:w-11/12"
+                  onSubmit={handleFormSubmit}
+                >
                   <div className="p-4">
                     <div className="w-full mx-auto text-lg">
                       <label className="text-gray-700" htmlFor="form4Example2">

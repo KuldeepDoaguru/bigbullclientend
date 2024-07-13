@@ -75,7 +75,7 @@ const Home = () => {
   const getCourses = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:6060/api/v1/auth/getAllCourses"
+        "https://test.bigbulls.co.in/api/v1/auth/getAllCourses"
       );
       setAllCourse(data.result);
     } catch (error) {

@@ -586,7 +586,7 @@ const boughtCourse = async (req, res) => {
             newPayId,
             student_id,
             student_name,
-            JSON.stringify(course_id),
+            course_id,
             course_name,
             student_email,
             newReceipt,
@@ -736,6 +736,20 @@ const getCourseFaq = (req, res) => {
   }
 };
 
+const getAllReview = (req, res) => {
+  try {
+    const selectQuery = "SELECT * FROM course_review";
+    db.query(selectQuery, (err, result) => {
+      if (err) {
+        res.status(400).json({ success: false, message: err.message });
+      }
+      res.status(200).send(result);
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "internal server error" });
+  }
+};
+
 module.exports = {
   invoiceController,
   createInvoice,
@@ -762,4 +776,5 @@ module.exports = {
   addCourseReviews,
   getCourseReviews,
   getCourseFaq,
+  getAllReview,
 };

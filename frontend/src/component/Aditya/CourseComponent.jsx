@@ -2,20 +2,24 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa"; // Importing star icons
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaArrowRightLong, FaArrowLeftLong } from "react-icons/fa6";
 import axios from "axios";
 import cogoToast from "cogo-toast";
+import { IoStarSharp } from "react-icons/io5";
 import moment from "moment";
+import { toggleTableRefresh } from "../../redux/slicer";
 
 const CourseComponent = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
   const [allCourse, setAllCourse] = useState([]);
   const [selectedDate, setSelectedDate] = useState("All");
+  const [courseReview, setCourseReview] = useState([]);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   console.log(user);
+  const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 3;
@@ -23,7 +27,7 @@ const CourseComponent = () => {
   const getCourses = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:6060/api/v1/auth/getAllCourses"
+        "https://test.bigbulls.co.in/api/v1/auth/getAllCourses"
       );
       setAllCourse(data.result);
     } catch (error) {
@@ -40,9 +44,10 @@ const CourseComponent = () => {
   const addCart = async (id) => {
     try {
       const res = await axios.post(
-        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/add-to-cart/${user.id}/${id}`
       );
       cogoToast.success("Course added to cart successfully");
+      dispatch(toggleTableRefresh());
     } catch (error) {
       console.log(error);
       cogoToast.error(error?.response.data?.message);
@@ -182,6 +187,51 @@ const CourseComponent = () => {
     };
   }, []);
 
+  const getReviews = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://test.bigbulls.co.in/api/v1/auth/getAllReview`
+      );
+      setCourseReview(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getReviews();
+  }, []);
+
+  console.log(courseReview);
+  const starsCount = courseReview.reduce((acc, review) => {
+    if (!acc[review.course_id]) {
+      acc[review.course_id] = 0;
+    }
+
+    acc[review.course_id] += review.stars;
+    return acc;
+  }, {});
+
+  const result = Object.keys(starsCount).map((course_id) => ({
+    course_id: parseInt(course_id),
+    totalStars: starsCount[course_id] / 5,
+  }));
+
+  console.log(result);
+
+  console.log(starsCount);
+
+  const totalStarsFil = currentCourses?.map((item) => {
+    const starsTot = result?.find((star) => star.course_id === item.course_id);
+    if (starsTot) {
+      return { ...item, totalStars: Math.round(starsTot.totalStars) };
+    }
+    return item;
+  });
+
+  console.log(currentCourses);
+  console.log(totalStarsFil);
+
   return (
     <CoursePage>
       <div className="container mx-auto md:p-4 pt-0">
@@ -220,7 +270,7 @@ const CourseComponent = () => {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-2 sm:max-lg:-mt-16 lg:-mt-6 min-w-80 max-lg:-mr-8">
+          <div className="flex flex-wrap gap-2 sm:max-lg:-mt-16 lg:-mt-6 min-w-80">
             <div className="flex flex-col items-start ">
               <label htmlFor="priceRange" className="mb-1 text-gray-700">
                 Price Range
@@ -260,7 +310,7 @@ const CourseComponent = () => {
           <div className="px-4.5 py-4.5 flex justify-center">
             <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3   max-w-5xl w-ful gap-5">
               {/* <label>Categories by Dater</label> */}
-              {currentCourses.map((course) => (
+              {totalStarsFil.map((course) => (
                 <>
                   <div className="card-container min-w-72 max-sm:max-w-[17rem]">
                     <div
@@ -303,16 +353,45 @@ const CourseComponent = () => {
                             <p className="mb-2 text-base sm:text-md">
                               Price Value
                             </p>
-                            <div className="flex">
-                              {Array.from({ length: course.rating }).map(
-                                (_, index) => (
-                                  <FaStar
-                                    key={index}
-                                    color="#ffa41c"
-                                    className="text-lg sm:text-md"
-                                  />
-                                )
-                              )}
+                            <div className="">
+                              <h2 className="flex">
+                                {/* {item.stars} */}
+                                <IoStarSharp
+                                  className={`${
+                                    course.totalStars >= 1
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  } text-2xl`}
+                                />
+                                <IoStarSharp
+                                  className={`${
+                                    course.totalStars >= 2
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  } text-2xl `}
+                                />
+                                <IoStarSharp
+                                  className={`${
+                                    course.totalStars >= 3
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  } text-2xl `}
+                                />
+                                <IoStarSharp
+                                  className={`${
+                                    course.totalStars >= 4
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  } text-2xl `}
+                                />
+                                <IoStarSharp
+                                  className={`${
+                                    course.totalStars === 5
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  } text-2xl `}
+                                />
+                              </h2>
                             </div>
                           </div>
                           <div className="text-center">

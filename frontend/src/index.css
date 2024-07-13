@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'Alegreya';
-  src: local('Futura-bold'), url('./fonts/Alegreya-Italic-VariableFont_wght.ttf') format('ttf');
+  font-family: "Alegreya";
+  src: local("Futura-bold"),
+    url("./fonts/Alegreya-Italic-VariableFont_wght.ttf") format("ttf");
 }
 
 * {

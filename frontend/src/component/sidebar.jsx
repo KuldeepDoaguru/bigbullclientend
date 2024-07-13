@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../redux/slicer";
+import axios from "axios";
 
 const SideBar = ({ checked, setChecked }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const [cartCourses, setCartCourses] = useState([]);
+  const { refreshTable } = useSelector((state) => state.user);
 
   const handleClick = (e) => {
     if (setChecked) setChecked(!checked);
@@ -17,6 +20,21 @@ const SideBar = ({ checked, setChecked }) => {
     dispatch(clearUser());
     if (setChecked) setChecked(false);
   };
+
+  const getCarts = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://test.bigbulls.co.in/api/v1/auth/getCartItems/${user.id}`
+      );
+      setCartCourses(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCarts();
+  }, [refreshTable]);
 
   return (
     <>
@@ -33,31 +51,31 @@ const SideBar = ({ checked, setChecked }) => {
             <ol className="list-none">
               <li
                 onClick={handleClick}
-                className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
               >
                 <Link to="/">Home</Link>
               </li>
               <li
                 onClick={handleClick}
-                className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
               >
                 <Link to="/courses">Courses</Link>
               </li>
               <li
                 onClick={handleClick}
-                className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
               >
                 <Link to="/about">About</Link>
               </li>
               <li
                 onClick={handleClick}
-                className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
               >
                 <Link to="/blogs">Blogs</Link>
               </li>
               <li
                 onClick={handleClick}
-                className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
               >
                 <Link to="/ContactUs">Contact Us</Link>
               </li>
@@ -65,13 +83,13 @@ const SideBar = ({ checked, setChecked }) => {
                 <>
                   <li
                     onClick={handleClick}
-                    className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                    className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
                   >
                     <Link to="/EnrollForm">Enroll Now</Link>
                   </li>
                   <li
                     onClick={handleClick}
-                    className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                    className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
                   >
                     <Link to="/login">Log In</Link>
                   </li>
@@ -80,19 +98,27 @@ const SideBar = ({ checked, setChecked }) => {
                 <>
                   <li
                     onClick={handleClick}
-                    className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                    className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
                   >
-                    <Link to="/Cart">Cart</Link>
+                    <Link to="/Cart">
+                      <div className="flex align-items-center">
+                        {" "}
+                        <p>Cart </p>
+                        <p className="text-3xl mx-1 bg-dark text-light py-2 px-3 w-min rounded-2xl shadow">
+                          {cartCourses.length}
+                        </p>
+                      </div>
+                    </Link>
                   </li>
                   <li
                     onClick={handleClick}
-                    className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                    className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
                   >
                     <Link to="/profile">Profile</Link>
                   </li>
                   <li
                     onClick={handleLogout}
-                    className="sm:my-10 xl:my-16 text-3xl my-9 sm:text-4xl md:text-[3vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
+                    className="sm:my-10 xl:my-8 text-2xl my-9 sm:text-4xl md:text-[2vw] leading-7 lg:leading-5 xl:leading-6 font-medium text-black font-serif md:hover:scale-125 transition-all duration-300 ease-in-out"
                   >
                     <span>Log Out</span>
                   </li>

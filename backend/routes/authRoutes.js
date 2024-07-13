@@ -13,16 +13,35 @@ const {
   verifyOtp,
   contactRequest,
   getBoughtCourseViaId,
+  getUserViaId,
+  updateUsers,
+  deleteUser,
+  getUserViaEmail,
 } = require("../controllers/authController.js");
-const {
-  addToCart,
-  coursePage,
-  getAllCourses,
-  videoListViaCourseId,
-} = require("../controllers/ItemController.js");
 
 // router object
 const router = express.Router();
+
+router.get("/getUserViaEmail", getUserViaEmail);
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "profilePicture/");
+  },
+  filename: function (req, file, cb) {
+    const fileName =
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname);
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({ storage: storage });
+router.put(
+  "/update-users-details/:id",
+  upload.single("profilePicture"),
+  updateUsers
+);
+router.get("/getUserViaId/:id", getUserViaId);
 
 const profilePicturestorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -45,15 +64,12 @@ router.post(
 );
 router.post("/login", loginController);
 router.post("/sendOtp", sendOtp);
-router.post("/verifyOtp", verifyOtp);
 router.post("/updatePassword", updatePassword);
-router.post("/add-to-cart/:user_id/:item_id", addToCart);
-router.get("/getAllCourses", getAllCourses);
-router.get("/coursePage/:courseId", coursePage);
-router.get(`/videoListViaCourseId/:courseId/:chid`, videoListViaCourseId);
 router.get("/contactInquiry", contactInquiry);
 router.get("/getBoughtCourseDetails", getBoughtCourseDetails);
 router.post("/contactRequest", contactRequest);
 router.get("/getBoughtCourseViaId/:uid", getBoughtCourseViaId);
+router.post("/verifyOtp", verifyOtp);
+router.delete("/deleteUser/:userId", deleteUser);
 
 module.exports = router;

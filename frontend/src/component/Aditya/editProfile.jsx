@@ -124,7 +124,7 @@ const EditProfileComponent = () => {
   const getUserDetails = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getUserViaId/${user.id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getUserViaId/${user.id}`
       );
       setUserData(data);
     } catch (error) {
@@ -231,7 +231,7 @@ const EditProfileComponent = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:6060/api/v1/auth/update-users-details/${user.id}`,
+        `https://test.bigbulls.co.in/api/v1/auth/update-users-details/${user.id}`,
         formDetails,
         {
           headers: {

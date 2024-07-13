@@ -4,9 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { SiOpenlayers } from "react-icons/si";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import cogoToast from "cogo-toast";
+import { toggleTableRefresh } from "../redux/slicer";
 
 const courseCardData = [
   {
@@ -57,6 +58,7 @@ const CoursesInLandingPage = ({ sectionRef }) => {
   // console.log('render');
   const navigate = useNavigate();
   const [allCourse, setAllCourse] = useState([]);
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   console.log(user);
   const scrollRef = useRef(null);
@@ -111,7 +113,7 @@ const CoursesInLandingPage = ({ sectionRef }) => {
   const getCourses = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:6060/api/v1/auth/getAllCourses"
+        "https://test.bigbulls.co.in/api/v1/auth/getAllCourses"
       );
       setAllCourse(data.result);
     } catch (error) {
@@ -128,9 +130,10 @@ const CoursesInLandingPage = ({ sectionRef }) => {
   const addCart = async (id) => {
     try {
       const res = await axios.post(
-        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/add-to-cart/${user.id}/${id}`
       );
       cogoToast.success("Course added to cart successfully");
+      dispatch(toggleTableRefresh());
     } catch (error) {
       console.log(error);
       cogoToast.error(error?.response.data?.message);
@@ -155,7 +158,7 @@ const CoursesInLandingPage = ({ sectionRef }) => {
               {/* card */}
               {allCourse?.slice(1, 4)?.map((card) => (
                 <>
-                  <div className="course-card-container mb-10 sm:m-0 sm:max-w-[640px] md:max-w-screen lg:max-xl:max-w-[318px] sm:m-auto ">
+                  <div className="course-card-container mb-10 sm:m-0 md:max-w-screen sm:m-auto ">
                     <div
                       className={`course-card card-stretched course-card-center rounded-lg p-2 sm:p-4 pt-2 `}
                     >
@@ -175,7 +178,11 @@ const CoursesInLandingPage = ({ sectionRef }) => {
                           </button>
 
                           <p className="font-bold text-base sm:text-xl font-bold h-20">
-                            {card.course_name}
+                            <Link to={`/Cdetail/${card.course_id}`}>
+                              <h2 className="hover:text-red-900">
+                                {card.course_name}
+                              </h2>
+                            </Link>
                           </p>
                           <p className="text-sm sm:text-sm font-semibold my-1 sm:my-2.5 ">
                             {card.description}

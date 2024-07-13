@@ -1,13 +1,70 @@
-import React from "react";
+import axios from "axios";
+import cogoToast from "cogo-toast";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toggleTableRefresh } from "../../redux/slicer";
 
 const CourseHeader = ({ course, courseId }) => {
+  const user = useSelector((state) => state.user);
+  console.log(user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // console.log(course);
+  const [courseData, setCourseData] = useState([]);
+  console.log(course);
 
   const handleStartLearning = () => {
     navigate(`/course-dashboard/${courseId}`);
   };
+
+  const courseDetailsById = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://test.bigbulls.co.in/api/v1/auth/getBoughtCourseViaId/${user.id}`
+      );
+      setCourseData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    courseDetailsById();
+  }, []);
+
+  console.log(courseData);
+
+  const courseFilter = courseData
+    ?.filter((item) => item.course_id)
+    .map((item) => item.course_id);
+
+  console.log(courseFilter);
+
+  const filterEachCourse = courseFilter
+    ?.filter((item) => item)
+    ?.flatMap((item) => item.split(", "));
+
+  console.log(filterEachCourse);
+
+  const courseCheckfilter = filterEachCourse?.includes(
+    String(course[0]?.course_id)
+  );
+
+  console.log(courseCheckfilter);
+
+  const addCart = async () => {
+    try {
+      const res = await axios.post(
+        `https://test.bigbulls.co.in/api/v1/auth/add-to-cart/${user.id}/${course[0]?.course_id}`
+      );
+      cogoToast.success("Course added to cart successfully");
+      dispatch(toggleTableRefresh());
+    } catch (error) {
+      console.log(error);
+      cogoToast.error(error?.response.data?.message);
+    }
+  };
+
   return (
     <header className="bg-white shadow-lg p-6 rounded-lg mb-6">
       <div className="flex flex-col lg:flex-row justify-between items-start">
@@ -18,12 +75,27 @@ const CourseHeader = ({ course, courseId }) => {
           <h1 className="text-3xl font-bold mb-4">{course[0]?.title}</h1>
           <p className="text-gray-600 mb-4">{course[0]?.description}</p>
           <div className="flex flex-wrap max-sm:space-x-0 space-x-4">
-            <button
-              className="bg-red-600 text-white px-4 py-2 rounded-md mb-2"
-              onClick={handleStartLearning}
-            >
-              Start learning now
-            </button>
+            {courseCheckfilter ? (
+              <>
+                <button
+                  className="bg-red-600 text-white px-4 py-2 rounded-md mb-2"
+                  onClick={handleStartLearning}
+                >
+                  Start learning now
+                </button>
+              </>
+            ) : (
+              <>
+                {" "}
+                <button
+                  className="bg-red-300 text-white px-4 py-2 rounded-md mb-2"
+                  disabled
+                >
+                  Start learning now
+                </button>
+              </>
+            )}
+
             {/* <button
               className="border border-blue-600 text-red-600 px-4 py-2 rounded-md mb-2"
               // onClick={onAddToFavorites}
@@ -69,12 +141,27 @@ const CourseHeader = ({ course, courseId }) => {
                 <span className="col-span-2">{course[0]?.price} INR</span>
               </div>
             </div>
-            <button
-              className="bg-red-600 text-white w-full mt-4 py-2 rounded-md"
-              // onClick={onAddToCart}
-            >
-              Add to Cart
-            </button>
+            {courseCheckfilter ? (
+              <>
+                {" "}
+                <button
+                  className="bg-red-600 text-white w-full mt-4 py-2 rounded-md"
+                  onClick={addCart}
+                >
+                  Add to Cart
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="bg-red-300 text-white w-full mt-4 py-2 rounded-md"
+                  disabled
+                  // onClick={onAddToCart}
+                >
+                  Add to Cart
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

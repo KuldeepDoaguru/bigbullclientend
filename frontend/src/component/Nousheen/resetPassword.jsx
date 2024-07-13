@@ -1,38 +1,41 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Toaster, toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [cpassword, setCPassword] = useState('');
-  const [otp, setOtp] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [cpassword, setCPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== cpassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
     try {
-      const response = await axios.post('http://localhost:6060/api/v1/auth/updatePassword', {
-        email,
-        password,
-        cpassword,
-        otp,
-      });
+      const response = await axios.post(
+        "https://test.bigbulls.co.in/api/v1/auth/updatePassword",
+        {
+          email,
+          password,
+          cpassword,
+          otp,
+        }
+      );
       setMessage(response.data.message);
       if (response.data.success) {
-        toast.success('Password reset successfully!');
-        navigate('/login');
+        toast.success("Password reset successfully!");
+        navigate("/login");
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -40,7 +43,12 @@ const ResetPassword = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Toaster />
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-900" style={{ fontFamily: "Futura-bold" }}>Reset Password</h2>
+        <h2
+          className="text-3xl font-bold text-center text-gray-900"
+          style={{ fontFamily: "Futura-bold" }}
+        >
+          Reset Password
+        </h2>
         {message && (
           <div className="p-4 mt-4 text-sm text-center text-red-500 bg-red-100 rounded-md">
             {message}
@@ -48,7 +56,10 @@ const ResetPassword = () => {
         )}
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -61,7 +72,10 @@ const ResetPassword = () => {
             />
           </div>
           <div>
-            <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="otp"
+              className="block text-sm font-medium text-gray-700"
+            >
               OTP
             </label>
             <input
@@ -74,7 +88,10 @@ const ResetPassword = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               New Password
             </label>
             <input
@@ -87,7 +104,10 @@ const ResetPassword = () => {
             />
           </div>
           <div>
-            <label htmlFor="cpassword" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="cpassword"
+              className="block text-sm font-medium text-gray-700"
+            >
               Confirm New Password
             </label>
             <input

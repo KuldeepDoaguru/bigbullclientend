@@ -3,6 +3,7 @@ import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { ContainerScroll } from "../ContainerScroll.jsx";
 
 const About = () => {
   const user = useSelector((state) => state.user);
@@ -13,7 +14,7 @@ const About = () => {
       title: "Our Vision",
       subtitle: "Empowering Investors Globally",
       description:
-        "Our vision is to create a world where every individual has the power to make informed investment decisions. We aim to provide accurate, timely, and comprehensive stock market data to investors around the globe, enabling them to achieve financial independence and success.",
+        "Our vision is to create a world where every individual has the power to make informed investment decisions. We aim to provide accurate, timely, and comprehensive stock market data to investors around the globe, enabling them to achieve financial independence and success. Our vision is to create a world where every individual has the power to make informed investment decisions. We aim to provide accurate, timely, and comprehensive stock market data to investors around the globe, enabling them to achieve financial independence and success. Our vision is to create a world where every individual has the power to make informed investment decisions. We aim to provide accurate, timely, and comprehensive stock market data to investors around the globe, enabling them to achieve financial independence and success.",
       imgSrc:
         "https://static.vecteezy.com/system/resources/previews/016/558/427/non_2x/data-analysis-vision-for-stock-market-investment-predictions-businessman-looking-through-binoculars-to-see-stock-price-illustration-vector.jpg",
     },
@@ -21,7 +22,7 @@ const About = () => {
       title: "Our Goal",
       subtitle: "Achieving Excellence in Stock Market Analysis",
       description:
-        "Our goal is to be the leading platform for stock market analysis and insights. We are dedicated to offering in-depth market analysis, expert advice, and innovative tools that help investors navigate the complexities of the stock market with confidence. Our commitment is to continuously improve and innovate, ensuring our users have the best resources at their fingertips.",
+        "Our goal is to be the leading platform for stock market analysis and insights. We are dedicated to offering in-depth market analysis, expert advice, and innovative tools that help investors navigate the complexities of the stock market with confidence. Our commitment is to continuously improve and innovate, ensuring our users have the best resources at their fingertips. Our goal is to be the leading platform for stock market analysis and insights. We are dedicated to offering in-depth market analysis, expert advice, and innovative tools that help investors navigate the complexities of the stock market with confidence. Our commitment is to continuously improve and innovate, ensuring our users have the best resources at their fingertips. Our goal is to be the leading platform for stock market analysis and insights. We are dedicated to offering in-depth market analysis, expert advice, and innovative tools that help investors navigate the complexities of the stock market with confidence. Our commitment is to continuously improve and innovate, ensuring our users have the best resources at their fingertips.",
       imgSrc:
         "https://static.vecteezy.com/system/resources/previews/019/857/839/non_2x/business-vision-concepts-global-economic-recession-or-stagnation-stock-market-or-asset-slump-economic-growth-flat-illustrations-vector.jpg",
     },
@@ -34,36 +35,117 @@ const About = () => {
         {/* <video src={bgvdo} autoPlay muted loop className='bg-video absolute inset-0 w-full h-full object-cover'></video> */}
         <h1
           style={{ fontFamily: "Futura-bold" }}
-          className={`text-black flex items-center justify-center text-5xl sm:text-8xl  py-4 transform transition-transform duration-1000 font-bold`}
+          className={`text-red-900 flex items-center justify-center text-5xl sm:text-8xl  py-4 transform transition-transform duration-1000 font-bold`}
         >
           About Us
         </h1>
-        <div className="max-sm:mt-0 mt-8 rounded-lg relative z-0 ">
+        <hr />
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl font-semibold text-black dark:text-white">
+                <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
+                  {aboutPost[0].title}
+                </span>
+              </h1>
+            </>
+          }
+        >
+          {/* <img
+            src="https://res.cloudinary.com/dq5upuxm8/image/upload/v1703232532/bigbull/bb3_smmawt.png"
+            alt="hero"
+            height={1000}
+            width={1400}
+            className="mx-auto rounded-2xl object-cover h-full object-fit"
+            draggable={false}
+          /> */}
+
+          <div
+            key={0}
+            className={`flex flex-col md:flex-row items-center gap-10 max-sm:mt-0 my-10 blog-left `}
+          >
+            <div className="md:ml-6 md:mr-6 mt-4 md:mt-0">
+              <h2 className="text-md text-4xl text-red-700 font-bold max-sm:text-center">
+                {aboutPost[0].title}
+              </h2>
+              {/* <h2 className="text-xxl text-2xl font-bold my-3">{aboutPost[0].subtitle}</h2> */}
+              <p className="mt-2 text-gray-600 text-1xl leading-loose text-justify">
+                {aboutPost[0].description}
+              </p>
+            </div>
+            <img
+              src={aboutPost[0].imgSrc}
+              alt="Blog Post"
+              className="w-full md:w-1/4 rounded-md"
+            />
+          </div>
+        </ContainerScroll>
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl font-semibold text-black dark:text-white">
+                <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
+                  {aboutPost[1].title}
+                </span>
+              </h1>
+            </>
+          }
+        >
+          {/* <img
+            src="https://res.cloudinary.com/dq5upuxm8/image/upload/v1703232532/bigbull/bb3_smmawt.png"
+            alt="hero"
+            height={1000}
+            width={1400}
+            className="mx-auto rounded-2xl object-cover h-full object-fit"
+            draggable={false}
+          /> */}
+
+          <div
+            key={0}
+            className={`flex flex-col md:flex-row items-center gap-10 max-sm:mt-0 my-10 blog-left `}
+          >
+            <div className="md:ml-6 md:mr-6 mt-4 md:mt-0">
+              <h2 className="text-md text-4xl text-red-700 font-bold max-sm:text-center">
+                {aboutPost[1].title}
+              </h2>
+              {/* <h2 className="text-xxl text-2xl font-bold my-3">{aboutPost[0].subtitle}</h2> */}
+              <p className="mt-2 text-gray-600 text-1xl leading-loose text-justify">
+                {aboutPost[1].description}
+              </p>
+            </div>
+            <img
+              src={aboutPost[1].imgSrc}
+              alt="Blog Post"
+              className="w-full md:w-1/4 rounded-md"
+            />
+          </div>
+        </ContainerScroll>
+        <div className="max-sm:mt-0 rounded-lg relative z-0 ">
           <div className="container mx-auto max-w-screen-xl">
             <div
               key={0}
               className={`flex flex-col md:flex-row items-center gap-10 max-sm:mt-0 my-10 blog-left `}
             >
-              <div className="md:ml-6 md:mr-6 mt-4 md:mt-0">
+              {/* <div className="md:ml-6 md:mr-6 mt-4 md:mt-0">
                 <h2 className="text-md text-4xl text-red-700 font-bold max-sm:text-center">
                   {aboutPost[0].title}
                 </h2>
-                {/* <h2 className="text-xxl text-2xl font-bold my-3">{aboutPost[0].subtitle}</h2> */}
+                <h2 className="text-xxl text-2xl font-bold my-3">{aboutPost[0].subtitle}</h2>
                 <p className="mt-2 text-gray-600 text-1xl leading-loose ">
                   {aboutPost[0].description}
                 </p>
-              </div>
-              <img
+              </div> */}
+              {/* <img
                 src={aboutPost[0].imgSrc}
                 alt="Blog Post"
                 className="w-full md:w-1/4 rounded-md"
-              />
+              /> */}
             </div>
             <div
               key={1}
               className={`flex flex-col md:flex-row items-center gap-10 my-10 sm:my-20 blog-right`}
             >
-              <div className="md:ml-6 md:mr-6 mt-4 md:mt-0 md:order-2">
+              {/* <div className="md:ml-6 md:mr-6 mt-4 md:mt-0 md:order-2">
                 <h2 className="text-md text-4xl text-red-700 font-bold max-sm:text-center">
                   {aboutPost[1].title}
                 </h2>
@@ -75,7 +157,7 @@ const About = () => {
                 src={aboutPost[1].imgSrc}
                 alt="Blog Post"
                 className="w-full md:w-1/4 rounded-md md:order-1"
-              />
+              /> */}
             </div>
           </div>
           <h2 className="text-5xl font-bold mb-16 text-center">

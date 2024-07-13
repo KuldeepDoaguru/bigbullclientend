@@ -23,7 +23,7 @@ const CourseDetail = () => {
   const courseDetails = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/coursePage/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/coursePage/${id}`
       );
       setCourseData(data);
     } catch (error) {
@@ -34,7 +34,7 @@ const CourseDetail = () => {
   const getCourseAbout = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getCourseAboutData/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getCourseAboutData/${id}`
       );
       setCourseAbout(data);
     } catch (error) {
@@ -45,7 +45,7 @@ const CourseDetail = () => {
   const getCourseChapter = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getChapterViaId/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getChapterViaId/${id}`
       );
       setCourseChapter(data);
     } catch (error) {
@@ -56,7 +56,7 @@ const CourseDetail = () => {
   const getReviews = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getCourseReviews/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getCourseReviews/${id}`
       );
       setCourseReview(data);
     } catch (error) {
@@ -67,7 +67,7 @@ const CourseDetail = () => {
   const getFaqCourse = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getCourseFaq/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getCourseFaq/${id}`
       );
       setCourseFaq(data);
     } catch (error) {
@@ -93,10 +93,6 @@ const CourseDetail = () => {
     );
   }
 
-  const handleStartLearning = () => {
-    navigate(`/course-dashboard/${id}`);
-  };
-
   const handleAddToFavorites = () => {
     // Add to favorites logic here
   };
@@ -107,8 +103,12 @@ const CourseDetail = () => {
 
   console.log(courseAbout);
 
+  const handleRightClick = (e) => {
+    e.preventDefault();
+  };
+
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="bg-gray-100 p-6" onContextMenu={handleRightClick}>
       <CourseHeader
         course={courseData}
         courseId={id}

@@ -194,7 +194,7 @@ const MyEnroll = () => {
     console.log(formData, profilePicture.file);
     try {
       const response = await axios.post(
-        "http://localhost:6060/api/v1/auth/register",
+        "https://test.bigbulls.co.in/api/v1/auth/register",
         formDetails,
         {
           headers: {

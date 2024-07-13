@@ -8,6 +8,7 @@ import { clearUser } from "../redux/slicer"; // Adjust the import path if necess
 import { RxCross2 } from "react-icons/rx";
 import { FaShoppingCart } from "react-icons/fa";
 import { HiMiniUserCircle } from "react-icons/hi2";
+import axios from "axios";
 
 const Navbar = () => {
   const location = useLocation();
@@ -15,6 +16,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   console.log(user);
+  const [cartCourses, setCartCourses] = useState([]);
+  const { refreshTable } = useSelector((state) => state.user);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -36,6 +39,21 @@ const Navbar = () => {
   const handleRightClick = (e) => {
     e.preventDefault();
   };
+
+  const getCarts = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://test.bigbulls.co.in/api/v1/auth/getCartItems/${user.id}`
+      );
+      setCartCourses(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCarts();
+  }, [refreshTable]);
 
   return (
     <>
@@ -168,13 +186,18 @@ const Navbar = () => {
                   to={"/cart"}
                   className={`text-4xl md:max-lg:text-2xl focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xl md:max-lg:py-1 sm:py-2 lg:py-2 text-center`}
                 >
-                  <FaShoppingCart
-                    className={`${
-                      location.pathname === "/cart"
-                        ? "text-red-700 text-3xl"
-                        : ""
-                    } hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
-                  />
+                  <div className="relative flex items-center">
+                    <FaShoppingCart
+                      className={`${
+                        location.pathname === "/cart"
+                          ? "text-red-700 text-3xl"
+                          : ""
+                      } hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
+                    />
+                    <p className="text-xs absolute top-[-12px] left-4 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                      {cartCourses.length}
+                    </p>
+                  </div>
                 </Link>
                 <Link
                   to={"/profile"}

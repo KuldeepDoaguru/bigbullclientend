@@ -15,7 +15,7 @@ const ProfileComponent = () => {
   const getUserDetails = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getUserViaId/${user.id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getUserViaId/${user.id}`
       );
       setUserData(data);
     } catch (error) {
@@ -26,7 +26,7 @@ const ProfileComponent = () => {
   const courseDetailsById = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getBoughtCourseViaId/${user.id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getBoughtCourseViaId/${user.id}`
       );
       setCourseData(data);
     } catch (error) {
@@ -37,7 +37,7 @@ const ProfileComponent = () => {
   const getCourses = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:6060/api/v1/auth/getAllCourses"
+        "https://test.bigbulls.co.in/api/v1/auth/getAllCourses"
       );
       setAllCourse(data.result);
     } catch (error) {
@@ -157,27 +157,27 @@ const ProfileComponent = () => {
               </div>
 
               <div className="text-gray-700">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <span className="font-semibold">First Name:</span>{" "}
+                <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
+                  <div className="flex">
+                    <span className="font-semibold">First Name: </span>{" "}
                     {userData[0]?.firstname}
                   </div>
-                  <div>
-                    <span className="font-semibold">Last Name:</span>{" "}
+                  <div className="flex">
+                    <span className="font-semibold">Last Name: </span>{" "}
                     {userData[0]?.lastname}
                   </div>
-                  <div>
-                    <span className="font-semibold">Email:</span>{" "}
+                  <div className="flex">
+                    <span className="font-semibold">Email: </span>{" "}
                     <a href={`mailto:${user.email}`} className="text-blue-800">
                       {user.email}
                     </a>
                   </div>
-                  <div>
-                    <span className="font-semibold">Phone Number:</span>{" "}
+                  <div className="flex">
+                    <span className="font-semibold">Phone Number: </span>{" "}
                     {userData[0]?.phone}
                   </div>
-                  <div className="col-span-2">
-                    <span className="font-semibold">Address:</span>{" "}
+                  <div className="flex">
+                    <span className="font-semibold">Address: </span>{" "}
                     {userData[0]?.address}
                   </div>
                 </div>

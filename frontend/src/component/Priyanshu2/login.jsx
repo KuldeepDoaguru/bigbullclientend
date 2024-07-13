@@ -35,7 +35,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6060/api/v1/auth/login",
+        "https://test.bigbulls.co.in/api/v1/auth/login",
         {
           email: email,
           password: password,

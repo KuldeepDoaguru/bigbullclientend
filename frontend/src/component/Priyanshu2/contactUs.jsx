@@ -42,7 +42,7 @@ const ContactUs = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:6060/api/v1/auth/contactRequest",
+        "https://test.bigbulls.co.in/api/v1/auth/contactRequest",
         formData
       );
       cogoToast.success("successfully submitted contact request");

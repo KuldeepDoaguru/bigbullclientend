@@ -38,7 +38,7 @@ const Footer = () => {
               </div>
 
               <div className="bottom-content flex flex-col lg:flex-row justify-between  text-2xl footer-links gap-20">
-                <div className="columns grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 md:gap-8 lg:gap-8 w-full lg:w-3/4 justify-center items-center mx-auto">
+                <div className="columns grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-8 lg:gap-8 w-full lg:w-3/4 justify-center items-center mx-auto">
                   <div className="column-1 sm:flex justify-center">
                     <ul className="flex flex-col items-center px-0 lg:items-start space-y-2 lg:text-left sm:mb-5">
                       <p className="head  my-4 pt-4">

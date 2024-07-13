@@ -1,19 +1,21 @@
 import axios from "axios";
 import cogoToast from "cogo-toast";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toggleTableRefresh } from "../../redux/slicer";
 
 const Cart = () => {
   const user = useSelector((state) => state.user);
   console.log(user);
   const [cartCourses, setCartCourses] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const getCarts = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:6060/api/v1/auth/getCartItems/${user.id}`
+        `https://test.bigbulls.co.in/api/v1/auth/getCartItems/${user.id}`
       );
       setCartCourses(data);
     } catch (error) {
@@ -31,9 +33,10 @@ const Cart = () => {
       const confirm = window.confirm("Are you sure you want to remove");
       if (confirm) {
         const res = await axios.delete(
-          `http://localhost:6060/api/v1/auth/removeCartItem/${id}`
+          `https://test.bigbulls.co.in/api/v1/auth/removeCartItem/${id}`
         );
         cogoToast.success("item removed successfully");
+        dispatch(toggleTableRefresh());
         getCarts();
       }
     } catch (error) {
@@ -80,7 +83,7 @@ const Cart = () => {
   const clearCart = async () => {
     try {
       const res = await axios.delete(
-        `http://localhost:6060/api/v1/auth/clearCart/${user.id}`
+        `https://test.bigbulls.co.in/api/v1/auth/clearCart/${user.id}`
       );
       getCarts();
       navigate("/profile");
@@ -102,7 +105,7 @@ const Cart = () => {
   const buyCourses = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:6060/api/v1/auth/boughtCourse",
+        "https://test.bigbulls.co.in/api/v1/auth/boughtCourse",
         formData
       );
       cogoToast.success("purchased course successfully");
@@ -135,51 +138,52 @@ const Cart = () => {
                   ) : (
                     <>
                       {cartCourses.map((course) => (
-                        <article
-                          key={course.course_id}
-                          style={{
-                            boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                          }}
-                          className="flex flex-wrap md:flex-nowrap mb-4 p-4 gap-6 sm:gap-0 justify-between"
-                        >
-                          <div className="flex sm:max-lg:grow">
-                            <figure className="flex lg:me-lg-5 flex-wrap">
-                              <div className="flex-shrink-0 w-48 max-sm:w-full">
-                                <img
-                                  src={`https://th.bing.com/th/id/OIP.M1U-BOiIzjE8ERoPA2GqpQHaE8?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7`}
-                                  className="object-cover rounded-md w-full h-full"
-                                  alt="Item"
-                                />
+                        <>
+                          <div className="rounded-md shadow mt-5 py-4 px-2">
+                            <article
+                              key={course.course_id}
+                              className="flex flex-wrap md:flex-nowrap mb-4 p-4 gap-6 sm:gap-0 justify-between"
+                            >
+                              <div className="flex sm:max-lg:grow">
+                                <figure className="flex lg:me-lg-5 flex-wrap">
+                                  <div className="flex-shrink-0 w-48 max-sm:w-full">
+                                    <img
+                                      src={`https://th.bing.com/th/id/OIP.M1U-BOiIzjE8ERoPA2GqpQHaE8?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7`}
+                                      className="object-cover rounded-md w-full h-full"
+                                      alt="Item"
+                                    />
+                                  </div>
+                                  <figcaption className="ml-4 md:max-w-[270px]">
+                                    <div className="max-sm:text-[5vw] font-bold sm:max-md:text-base max-sm:mb-5 max-sm:mt-10">
+                                      {course.course_name}
+                                    </div>
+                                    <i className="text-gray-500 text-lg">
+                                      {course.category}
+                                    </i>
+                                  </figcaption>
+                                </figure>
                               </div>
-                              <figcaption className="ml-4 md:max-w-[270px]">
-                                <div className="max-sm:text-[5vw] font-bold sm:max-md:text-base max-sm:mb-5 max-sm:mt-10">
-                                  {course.course_name}
+                            </article>
+                            <div className="flex sm:flex-col md:flex-row sm:justify-end justify-end text-end gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0 align-center">
+                              <div className="self-center min-w-16">
+                                <div className="price-wrap lh-sm">
+                                  <var className="price text-2xl font-semibold">{`₹ ${course.price}`}</var>
+                                  <br />
                                 </div>
-                                <i className="text-gray-500 text-lg">
-                                  {course.category}
-                                </i>
-                              </figcaption>
-                            </figure>
-                          </div>
-                          <div className="flex flex-row sm:flex-col md:flex-row sm:justify-center justify-end text-center gap-y-5 grow sm:grow-0 gap-2 ml-5 sm:ml-0 align-center">
-                            <div className="self-end min-w-16">
-                              <div className="price-wrap lh-sm">
-                                <var className="price text-2xl pb-3 font-semibold">{`₹ ${course.price}`}</var>
-                                <br />
                               </div>
-                            </div>
-                            <div className="flex m self-end justify-self-end sm:ms-0 md:ms-5 lg:ms-16 justify-end">
-                              <div className="space-x-2">
-                                <p
-                                  onClick={() => deleteCarts(course.cart_id)}
-                                  className="btn btn-light text-2xl text-red-500 shadow"
-                                >
-                                  Remove
-                                </p>
+                              <div className="flex m self-end justify-self-end sm:ms-0 md:ms-5 lg:ms-4 justify-end">
+                                <div className="space-x-2">
+                                  <p
+                                    onClick={() => deleteCarts(course.cart_id)}
+                                    className="btn btn-light text-2xl text-red-500 shadow"
+                                  >
+                                    Remove
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </article>
+                        </>
                       ))}
                     </>
                   )}

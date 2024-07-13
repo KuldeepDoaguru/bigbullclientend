@@ -27,7 +27,7 @@ const AddReview = ({ onClose, courseId, getReviews }) => {
   const submitReview = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:6060/api/v1/auth/addCourseReviews/${courseId}/${user.id}`,
+        `https://test.bigbulls.co.in/api/v1/auth/addCourseReviews/${courseId}/${user.id}`,
         reviewDetails
       );
       alert("Review added successfully! Thanks!");

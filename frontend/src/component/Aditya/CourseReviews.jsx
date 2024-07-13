@@ -1,27 +1,35 @@
 import { useState } from "react";
 import { IoStarSharp } from "react-icons/io5";
 import AddReview from "../AddReview";
+import { useSelector } from "react-redux";
 
 const CourseReviews = ({ review, courseId }) => {
   // console.log(review);
   const [addReviewPop, setAddReviewPop] = useState(false);
+  const user = useSelector((state) => state.user);
+  console.log(user);
 
   return (
     <>
       <section className="bg-white shadow-lg p-6 rounded-lg mb-6">
         <div className="flex mb-4">
           <h2 className="text-2xl font-bold">Reviews</h2>
-          <button
-            className="btn btn-success mx-2"
-            onClick={() => setAddReviewPop(true)}
-          >
-            {review.length === 0
-              ? "Be the first to submit review"
-              : "Write a review"}
-          </button>
+          {user?.id !== null && (
+            <>
+              {" "}
+              <button
+                className="btn btn-success mx-2"
+                onClick={() => setAddReviewPop(true)}
+              >
+                {review.length === 0
+                  ? "Be the first to submit review"
+                  : "Write a review"}
+              </button>
+            </>
+          )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-96 overflow-scroll">
           {review?.map((item) => (
             <>
               <div>

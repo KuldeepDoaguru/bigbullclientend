@@ -5,13 +5,16 @@ import { useEffect, useRef, useState } from "react";
 // import React from "react";
 import { CardBody, CardContainer, CardItem } from "./3d-card";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import cogoToast from "cogo-toast";
+import { toggleTableRefresh } from "../redux/slicer";
+import { Link } from "react-router-dom";
 
 const FeatureCardSection = () => {
   const [allCourse, setAllCourse] = useState([]);
   const scrollRef = useRef(null);
   const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   console.log(user);
 
   useEffect(() => {
@@ -31,7 +34,7 @@ const FeatureCardSection = () => {
   const getCourses = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:6060/api/v1/auth/getAllCourses"
+        "https://test.bigbulls.co.in/api/v1/auth/getAllCourses"
       );
       setAllCourse(data.result);
     } catch (error) {
@@ -46,9 +49,10 @@ const FeatureCardSection = () => {
   const addCart = async (id) => {
     try {
       const res = await axios.post(
-        `http://localhost:6060/api/v1/auth/add-to-cart/${user.id}/${id}`
+        `https://test.bigbulls.co.in/api/v1/auth/add-to-cart/${user.id}/${id}`
       );
       cogoToast.success("Course added to cart successfully");
+      dispatch(toggleTableRefresh());
     } catch (error) {
       console.log(error);
       cogoToast.error(error?.response.data?.message);
@@ -74,14 +78,19 @@ const FeatureCardSection = () => {
               <div className="feature-container gap-x-20 sm:gap-16 md:gap-2 grow flex justify-center 2xl:max-w-screen-xl flex-wrap xl:grid-cols-3 md:max-lg:grid md:grid-cols-1 lg:grid-cols-3 justify-items-center items-center md:w-full md:gap-y-8 2xl:grid 2xl:grid-cols-3 ">
                 {allCourse.slice(0, 3).map((card) => (
                   <>
-                    <CardContainer className="h-[600px] sm:w-[450px] px-[4vw] sm:px-6">
+                    <CardContainer className="h-[600px] sm:w-[640px] px-4 sm:px-6">
                       <CardBody className="bg-neutral-100 relative lg:w-11/12 lg:max-w-[23rem] md:w-10/12 w-[90vw] xl:max-w-[25rem] h-100 rounded-xl px-[4vw] sm:px-6 py-[2vw] sm:py-10 ">
                         <CardItem
                           translateZ={50}
-                          className="text-2xl font-bold text-neutral-600 text-black h-20"
+                          className="text-2xl font-bold text-neutral-600 text-black h-20 hover:text-red-900"
                         >
                           {/* Make things float in air */}
-                          {card.course_name}
+                          <Link to={`/Cdetail/${card.course_id}`}>
+                            {" "}
+                            <h2 className="hover:text-red-900">
+                              {card.course_name}
+                            </h2>
+                          </Link>
                         </CardItem>
                         <CardItem
                           translateZ={150}
