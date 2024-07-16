@@ -11,7 +11,7 @@ import moment from "moment";
 import { toggleTableRefresh } from "../../redux/slicer";
 
 const CourseComponent = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("All");
   const [allCourse, setAllCourse] = useState([]);
   const [selectedDate, setSelectedDate] = useState("All");
@@ -88,7 +88,7 @@ const CourseComponent = () => {
 
   const filteredCourses = allCourse?.filter((course) => {
     return (
-      (selectedCategory === "All" || course.category === selectedCategory) &&
+      (selectedCategory === "" || course.category === selectedCategory) &&
       filterByPrice(course) &&
       filterByDate(course)
     );
@@ -134,8 +134,8 @@ const CourseComponent = () => {
   ];
   const dates = ["All", "Last 30 Days", "Last 6 Months", "Last Year"];
 
-  const handleFilterClick = (category) => {
-    setSelectedCategory(category);
+  const handleFilterClick = (e) => {
+    setSelectedCategory(e.target.value);
     setCurrentPage(1);
   };
 
@@ -244,7 +244,20 @@ const CourseComponent = () => {
           </h1>
         </div>
         <div className="flex flex-col sm:flex-row justify-around items-center mb-6 gap-y-8 sm:gap-0 max-md:mt-16">
-          <div className="flex flex-wrap gap-2 sm:mb-0 justify-center sm:justify-start sm:max-lg:max-w-sm ">
+          <select
+            name=""
+            id=""
+            onChange={handleFilterClick}
+            className="border-danger p-2 rounded border-1 border-rose-500 rounded-lg"
+          >
+            <option value="">Select Category</option>
+            {categories?.map((item) => (
+              <>
+                <option value={item}>{item}</option>
+              </>
+            ))}
+          </select>
+          {/* <div className="flex flex-wrap gap-2 sm:mb-0 justify-center sm:justify-start sm:max-lg:max-w-sm ">
             <button
               onClick={() => handleFilterClick("All")}
               className={`px-4 py-1 border-1 border-rose-500 rounded-2xl transition-colors duration-300 ${
@@ -268,7 +281,7 @@ const CourseComponent = () => {
                 {category}
               </button>
             ))}
-          </div>
+          </div> */}
 
           <div className="flex flex-wrap gap-2 sm:max-lg:-mt-16 lg:-mt-6 min-w-80">
             <div className="flex flex-col items-start ">
@@ -319,7 +332,7 @@ const CourseComponent = () => {
                     >
                       <div className="w-full h-48 mb-2 overflow-hidden rounded-lg">
                         <img
-                          src={course.pic}
+                          src={course.thumbnails}
                           alt={course.title}
                           onClick={() => handleCourseClick(course.course_id)}
                           className="w-full h-full object-cover rounded-t-lg"

@@ -105,8 +105,8 @@ const Footer = () => {
                     </ul>
                   </div>
                   <div className="column-3 self-center items-center px-0 lg:items-start">
-                    <div className="p-0 max-w-100">
-                      <img src={logo} alt="Logo" width="100%" />
+                    <div className="p-0 max-w-100 flex justify-center">
+                      <img src={logo} alt="Logo" width="auto" />
                     </div>
                   </div>
                 </div>

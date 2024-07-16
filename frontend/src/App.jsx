@@ -30,6 +30,8 @@ import Dashboard2 from "./component/Aditya/Dashboard2";
 import Introduction from "./component/Aditya/Introduction";
 import ForgetPass from "./component/Aditya/forget";
 import { useSelector } from "react-redux";
+import MouseTrail from "./MouseTrail";
+import BackgroundBeams from "./BackgroundBeams";
 
 function App() {
   const location = useLocation();
@@ -39,6 +41,8 @@ function App() {
 
   return (
     <>
+      <MouseTrail />
+
       {location.pathname !== "/" ? <Navbar /> : ""}
       <ScrollToTop>
         <Routes>
@@ -89,6 +93,7 @@ function App() {
           <Route path="/forget" element={<ForgetPass />} />
         </Routes>
       </ScrollToTop>
+
       <Footer />
     </>
   );

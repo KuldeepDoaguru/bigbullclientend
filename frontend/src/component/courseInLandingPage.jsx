@@ -158,7 +158,7 @@ const CoursesInLandingPage = ({ sectionRef }) => {
               {/* card */}
               {allCourse?.slice(1, 4)?.map((card) => (
                 <>
-                  <div className="course-card-container mb-10 sm:m-0 md:max-w-screen sm:m-auto ">
+                  <div className="course-card-container mb-10 sm:m-0 md:max-w-screen sm:m-auto hover:scale-105 hover:scale-105 transform transition-all duration-300 ease-in-out">
                     <div
                       className={`course-card card-stretched course-card-center rounded-lg p-2 sm:p-4 pt-2 `}
                     >

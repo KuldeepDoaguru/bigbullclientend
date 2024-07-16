@@ -29,7 +29,7 @@ const CourseReviews = ({ review, courseId }) => {
           )}
         </div>
 
-        <div className="space-y-4 max-h-96 overflow-scroll">
+        <div className="space-y-4 max-h-96 overflow-y-scroll">
           {review?.map((item) => (
             <>
               <div>

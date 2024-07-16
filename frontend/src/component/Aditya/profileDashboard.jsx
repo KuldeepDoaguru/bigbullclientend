@@ -159,26 +159,35 @@ const ProfileComponent = () => {
               <div className="text-gray-700">
                 <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
                   <div className="flex">
-                    <span className="font-semibold">First Name: </span>{" "}
-                    {userData[0]?.firstname}
+                    <span className="font-semibold">
+                      First Name : {userData[0]?.firstname}
+                    </span>{" "}
                   </div>
                   <div className="flex">
-                    <span className="font-semibold">Last Name: </span>{" "}
-                    {userData[0]?.lastname}
+                    <span className="font-semibold">
+                      Last Name : {userData[0]?.lastname}
+                    </span>{" "}
                   </div>
                   <div className="flex">
-                    <span className="font-semibold">Email: </span>{" "}
-                    <a href={`mailto:${user.email}`} className="text-blue-800">
-                      {user.email}
-                    </a>
+                    <span className="font-semibold">
+                      Email :{" "}
+                      <a
+                        href={`mailto:${user.email}`}
+                        className="text-blue-800"
+                      >
+                        {user.email}
+                      </a>
+                    </span>{" "}
                   </div>
                   <div className="flex">
-                    <span className="font-semibold">Phone Number: </span>{" "}
-                    {userData[0]?.phone}
+                    <span className="font-semibold">
+                      Phone Number : {userData[0]?.phone}
+                    </span>{" "}
                   </div>
                   <div className="flex">
-                    <span className="font-semibold">Address: </span>{" "}
-                    {userData[0]?.address}
+                    <span className="font-semibold">
+                      Address : {userData[0]?.address}
+                    </span>{" "}
                   </div>
                 </div>
               </div>
