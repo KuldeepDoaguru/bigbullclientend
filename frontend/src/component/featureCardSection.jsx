@@ -78,11 +78,11 @@ const FeatureCardSection = () => {
               <div className="feature-container gap-x-20 sm:gap-16 md:gap-2 grow flex justify-center 2xl:max-w-screen-xl flex-wrap xl:grid-cols-3 md:max-lg:grid md:grid-cols-1 lg:grid-cols-3 justify-items-center items-center md:w-full md:gap-y-8 2xl:grid 2xl:grid-cols-3 ">
                 {allCourse.slice(0, 3).map((card) => (
                   <>
-                    <CardContainer className="h-[600px] sm:w-[640px] px-4 sm:px-6">
-                      <CardBody className="bg-neutral-100 relative lg:w-11/12 lg:max-w-[23rem] md:w-10/12 w-[90vw] xl:max-w-[25rem] h-100 rounded-xl px-[4vw] sm:px-6 py-[2vw] sm:py-10 ">
+                    <CardContainer className="h-[600px] sm:w-[640px] px-4 sm:px-6 ">
+                      <CardBody className="bg-neutral-100 relative lg:w-11/12 lg:max-w-[23rem] md:w-10/12 w-[90vw] xl:max-w-[25rem] h-100 rounded-xl px-[4vw] sm:px-6 py-[2vw] sm:py-10 cursor-pointer">
                         <CardItem
                           translateZ={50}
-                          className="text-2xl font-bold text-neutral-600 text-black h-20 hover:text-red-900"
+                          className="text-2xl font-bold text-neutral-600 text-black h-20 hover:text-red-900 cursor-pointer"
                         >
                           {/* Make things float in air */}
                           <Link to={`/Cdetail/${card.course_id}`}>
@@ -97,7 +97,7 @@ const FeatureCardSection = () => {
                           className="w-100 mt-4 sm:my-10"
                         >
                           <img
-                            src="https://www.ringcentral.com/gb/en/blog/wp-content/uploads/2021/05/happy-manager-leads-a-meeting-in-the-office-640x427.jpg"
+                            src={card?.thumbnails}
                             className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl "
                             alt="thumbnail"
                           />

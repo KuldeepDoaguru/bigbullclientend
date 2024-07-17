@@ -8,7 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 // import loginImage from './../../Assets/loginImage.png';
-import loginImage from "./../../Assets/loginImage3.png";
+// import loginImage from "./../../Assets/loginImage3.png";
 import { setUser } from "../../redux/slicer";
 
 function Login() {
@@ -65,14 +65,15 @@ function Login() {
               <h1 className="text-4xl md:text-7xl font-bold mb-10">Login</h1>
             </div>
 
-            <div className="w-full p-2.5 lg:py-14 rounded-lg shadow-md parent-container md:w-12/12 lg:w-8/12 max-lg:py-10 lg:pb-10 ">
+            <div className="w-full bg-gradient-to-r from-slate-400 via-gray-200 to-slate-400 p-2.5 lg:py-14 rounded-lg shadow-md parent-container md:w-12/12 lg:w-8/12 max-lg:py-10 lg:pb-10 ">
               <div className="grid justify-between grid-cols-1 sm:grid-cols-2 child-container md:flex-row">
-                <div
-                  className="w-full login-image bg-no-repeat bg-contain bg-center"
-                  style={{
-                    backgroundImage: `url("https://static.vecteezy.com/system/resources/previews/002/223/432/large_2x/banner-design-of-accounting-education-and-financial-literacy-to-improve-economic-growth-illustration-concept-can-be-use-for-landing-page-template-ui-web-mobile-app-poster-banner-website-free-vector.jpg")`,
-                  }}
-                ></div>
+                <div className="w-full login-image bg-no-repeat bg-contain bg-center">
+                  <img
+                    className="rounded shadow"
+                    src="https://res.cloudinary.com/dq5upuxm8/image/upload/v1721224921/bigbull/bull_vyy72g.png"
+                    alt=""
+                  />
+                </div>
 
                 <div className="w-full box">
                   <div className="flex justify-center">
@@ -176,10 +177,9 @@ function Login() {
 export default Login;
 
 const StyledContact = styled.div`
-  .login-image {
-    background-image: url(${loginImage});
+  /* .login-image {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
-  }
+  } */
 `;

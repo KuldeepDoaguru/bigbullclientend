@@ -115,11 +115,11 @@ const EditProfileComponent = () => {
 
   useEffect(() => {
     getAllStates();
-  }, [countryFilter]);
+  }, [formData]);
 
   useEffect(() => {
     getAllCities();
-  }, [filterCities]);
+  }, [formData]);
 
   const getUserDetails = async () => {
     try {
@@ -220,6 +220,7 @@ const EditProfileComponent = () => {
 
   const updateUserDetails = async (e) => {
     e.preventDefault();
+    alert("hello yupdate");
     const formDetails = new FormData();
 
     // Append user.data fields to formData

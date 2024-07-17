@@ -1,6 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { HiMiniUserCircle } from "react-icons/hi2";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 // import Babbar from "../../Assets/Astha/babbar.jpg"
@@ -68,6 +69,7 @@ const ProfileComponent = () => {
   );
 
   console.log(fetchedCourseFil);
+  console.log(userData);
 
   return (
     <div className="bg-gradient-to-br from-red-700 via-red-800 to-black text-white min-h-screen">
@@ -78,7 +80,13 @@ const ProfileComponent = () => {
               <div className="flex flex-col items-center justify-center mb-6">
                 <img
                   className="rounded-full h-32 w-32 border-4 border-red-900 object-cover"
-                  src="https://i.ytimg.com/vi/W43v7ePnjAA/maxresdefault.jpg"
+                  src={
+                    userData[0]?.profile_picture ? (
+                      userData[0]?.profile_picture
+                    ) : (
+                      <HiMiniUserCircle />
+                    )
+                  }
                   alt="Profile Image"
                 />
 

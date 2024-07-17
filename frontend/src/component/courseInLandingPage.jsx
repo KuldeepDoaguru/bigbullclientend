@@ -165,9 +165,9 @@ const CoursesInLandingPage = ({ sectionRef }) => {
                       {/* image */}
                       <div className="h-52 w-64 sm:w-72 md:w-80 lg:max-xl:w-[19rem]">
                         <img
-                          src={courseThumbain}
+                          src={card?.thumbnails}
                           alt=""
-                          className="h-full object-cover border-8  border-white rounded-2xl "
+                          className="h-full object-cover border-8  border-white rounded-2xl w-full"
                         />
                       </div>
                       {/* content */}

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "./../../public/logo/logo.png";
 import SideBar from "./sidebar";
 import { useEffect, useState } from "react";
@@ -12,17 +12,35 @@ import axios from "axios";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   console.log(user);
+  const [userData, setUserData] = useState([]);
   const [cartCourses, setCartCourses] = useState([]);
   const { refreshTable } = useSelector((state) => state.user);
 
   const handleLogout = () => {
     dispatch(clearUser());
     setIsChecked(false);
+    navigate("/login");
   };
+
+  const getUserDetails = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://test.bigbulls.co.in/api/v1/auth/getUserViaId/${user.id}`
+      );
+      setUserData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getUserDetails();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -203,13 +221,23 @@ const Navbar = () => {
                   to={"/profile"}
                   className="hover:underline hover:underline-offset-8  md:max-lg:text-3xl block sm:py-2 sm:px-1 text-2xl text-black text-gray-900 rounded transition duration-300 ease-in-out transform hover:scale-105"
                 >
-                  <HiMiniUserCircle
-                    className={`${
-                      location.pathname === "/profile"
-                        ? "text-red-700 text-3xl"
-                        : ""
-                    }  hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
-                  />
+                  {userData ? (
+                    <>
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src={userData[0]?.profile_picture}
+                        alt=""
+                      />
+                    </>
+                  ) : (
+                    <HiMiniUserCircle
+                      className={`${
+                        location.pathname === "/profile"
+                          ? "text-red-700 text-3xl"
+                          : ""
+                      }  hover:text-red-700 hover:text-3xl transform transition-all duration-300 ease-in-out`}
+                    />
+                  )}
                 </Link>
                 <button
                   onClick={handleLogout}

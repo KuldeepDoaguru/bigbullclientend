@@ -46,6 +46,12 @@ const ContactUs = () => {
         formData
       );
       cogoToast.success("successfully submitted contact request");
+      setFormData({
+        name: "",
+        email: "",
+        number: "",
+        message: "",
+      });
     } catch (error) {
       console.log(error);
     }

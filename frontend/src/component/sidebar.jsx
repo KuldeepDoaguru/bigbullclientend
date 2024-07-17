@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../redux/slicer";
@@ -7,6 +7,7 @@ import axios from "axios";
 
 const SideBar = ({ checked, setChecked }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const [cartCourses, setCartCourses] = useState([]);
   const { refreshTable } = useSelector((state) => state.user);
@@ -19,6 +20,7 @@ const SideBar = ({ checked, setChecked }) => {
   const handleLogout = () => {
     dispatch(clearUser());
     if (setChecked) setChecked(false);
+    navigate("/login");
   };
 
   const getCarts = async () => {
